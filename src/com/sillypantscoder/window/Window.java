@@ -5,10 +5,12 @@ import java.awt.image.BufferedImage;
 
 public abstract class Window {
 	public RepaintingPanel panel;
-	public Window(String title, int width, int height) {
+	public Window() {
 		panel = new RepaintingPanel();
 		panel.painter = this::painter;
 		panel.mouseClicked = this::mouseClicked;
+	}
+	public void open(String title, int width, int height) {
 		panel.run(title, width, height);
 	}
 	public BufferedImage painter(int width, int height) {

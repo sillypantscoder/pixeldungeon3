@@ -5,13 +5,13 @@ import java.io.IOException;
 import com.sillypantscoder.pixeldungeon3.utils.TextureLoader;
 import com.sillypantscoder.window.Surface;
 
-public class Cell {
-	public CellType type;
+public class Tile {
+	public TileType type;
 	public LightStatus lightStatus;
 	public int x;
 	public int y;
 	protected Surface image;
-	public Cell(CellType type, int x, int y) {
+	public Tile(TileType type, int x, int y) {
 		this.type = type;
 		this.x = x;
 		this.y = y;
@@ -19,7 +19,7 @@ public class Cell {
 		try {
 			this.image = TextureLoader.loadAsset("tiles0.png");
 		} catch (IOException e) {
-			System.out.println("Cell failed to load texture!");
+			System.out.println("Tile failed to load texture!");
 		}
 	}
 	public Surface draw() {

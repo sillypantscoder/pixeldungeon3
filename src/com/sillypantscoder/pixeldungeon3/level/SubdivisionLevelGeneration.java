@@ -6,17 +6,17 @@ import com.sillypantscoder.pixeldungeon3.Random;
 
 public class SubdivisionLevelGeneration {
 	public static void main(String[] args) {
-		Board board = generateLevel();
+		Level board = generateLevel();
 		// Print board as ASCII art
 		for (int y = 0; y < board.board.length; y++) {
 			for (int x = 0; x < board.board[y].length; x++) {
-				if (board.board[x][y].type == CellType.Wall) System.out.print("#");
+				if (board.board[x][y].type == TileType.Wall) System.out.print("#");
 				else System.out.print(".");
 			}
 			System.out.println();
 		}
 	}
-	public static Board generateLevel() {
+	public static Level generateLevel() {
 		int worldSize = 150;
 		worldSize /= 2;
 		ArrayList<Rect> rectsToDivide = new ArrayList<Rect>();
@@ -55,36 +55,18 @@ public class SubdivisionLevelGeneration {
 					rectsToDivide.add(newRects[n]);
 				}
 			}
-			/*
-			 --- DEBUGGING... ---
-			String r = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 " + worldSize + " " + worldSize + "'>";
-			for (int z = 0; z < rectsToDivide.size(); z++) {
-				r += "<rect x='" + rectsToDivide.get(z).x + "' y='" + rectsToDivide.get(z).y + "' width='" + rectsToDivide.get(z).w + "' height='" + rectsToDivide.get(z).h + "' stroke='red' stroke-width='0.1' fill='none' />";
-			}
-			for (int z = 0; z < resultRects.size(); z++) {
-				r += "<rect x='" + resultRects.get(z).x + "' y='" + resultRects.get(z).y + "' width='" + resultRects.get(z).w + "' height='" + resultRects.get(z).h + "' stroke='black' stroke-width='0.1' fill='none' />";
-			}
-			r += "</svg>";
-			try {
-				Process process = Runtime.getRuntime().exec(new String[] { "google-chrome", "data:image/svg+xml," + r });
-				process.waitFor();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}*/
 		}
 		// Create the board
-		Board board = new Board((worldSize * 2) + 1, (worldSize * 2) + 1);
+		Level board = new Level((worldSize * 2) + 1, (worldSize * 2) + 1);
 		for (int i = 0; i < resultRects.size(); i++) {
 			// Top
-			for (int x = resultRects.get(i).left() * 2; x < resultRects.get(i).right() * 2; x++) board.board[x][resultRects.get(i).top() * 2].type = CellType.Wall;
+			for (int x = resultRects.get(i).left() * 2; x < resultRects.get(i).right() * 2; x++) board.board[x][resultRects.get(i).top() * 2].type = TileType.Wall;
 			// Bottom
-			for (int x = resultRects.get(i).left() * 2; x < resultRects.get(i).right() * 2; x++) board.board[x][resultRects.get(i).bottom() * 2].type = CellType.Wall;
+			for (int x = resultRects.get(i).left() * 2; x < resultRects.get(i).right() * 2; x++) board.board[x][resultRects.get(i).bottom() * 2].type = TileType.Wall;
 			// Left
-			for (int y = resultRects.get(i).top() * 2; y < resultRects.get(i).bottom() * 2; y++) board.board[resultRects.get(i).left() * 2][y].type = CellType.Wall;
+			for (int y = resultRects.get(i).top() * 2; y < resultRects.get(i).bottom() * 2; y++) board.board[resultRects.get(i).left() * 2][y].type = TileType.Wall;
 			// Right
-			for (int y = resultRects.get(i).top() * 2; y < resultRects.get(i).bottom() * 2; y++) board.board[resultRects.get(i).right() * 2][y].type = CellType.Wall;
+			for (int y = resultRects.get(i).top() * 2; y < resultRects.get(i).bottom() * 2; y++) board.board[resultRects.get(i).right() * 2][y].type = TileType.Wall;
 			// Add doors
 			int nDoors = 1 + (int)(Math.round(Math.random() * 2));
 			for (int d = 0; d < nDoors; d++) {
@@ -96,25 +78,25 @@ public class SubdivisionLevelGeneration {
 						// Top
 						doorX = Random.randint((resultRects.get(i).left() * 2) + 1, (resultRects.get(i).right() * 2) - 1);
 						doorY = resultRects.get(i).top() * 2;
-						board.board[doorX][doorY].type = CellType.Ground;
+						board.board[doorX][doorY].type = TileType.Ground;
 						break;
 					case 1:
 						// Bottom
 						doorX = Random.randint((resultRects.get(i).left() * 2) + 1, (resultRects.get(i).right() * 2) - 1);
 						doorY = resultRects.get(i).bottom() * 2;
-						board.board[doorX][doorY].type = CellType.Ground;
+						board.board[doorX][doorY].type = TileType.Ground;
 						break;
 					case 2:
 						// Left
 						doorX = resultRects.get(i).left() * 2;
 						doorY = Random.randint((resultRects.get(i).top() * 2) + 1, (resultRects.get(i).bottom() * 2) - 1);
-						board.board[doorX][doorY].type = CellType.Ground;
+						board.board[doorX][doorY].type = TileType.Ground;
 						break;
 					case 3:
 						// Right
 						doorX = resultRects.get(i).right() * 2;
 						doorY = Random.randint((resultRects.get(i).top() * 2) + 1, (resultRects.get(i).bottom() * 2) - 1);
-						board.board[doorX][doorY].type = CellType.Ground;
+						board.board[doorX][doorY].type = TileType.Ground;
 						break;
 				}
 			}
