@@ -57,7 +57,9 @@ public class SubdivisionLevelGeneration {
 			}
 		}
 		// Create the board
+		System.out.println("Creating level");
 		Level board = new Level((worldSize * 2) + 1, (worldSize * 2) + 1);
+		System.out.println("Writing level...");
 		for (int i = 0; i < resultRects.size(); i++) {
 			// Top
 			for (int x = resultRects.get(i).left() * 2; x < resultRects.get(i).right() * 2; x++) board.board[x][resultRects.get(i).top() * 2].type = TileType.Wall;
@@ -99,6 +101,12 @@ public class SubdivisionLevelGeneration {
 						board.board[doorX][doorY].type = TileType.Ground;
 						break;
 				}
+			}
+		}
+		System.out.println("Finished generation");
+		for (int x = 0; x < board.getWidth(); x++) {
+			for (int y = 0; y < board.getHeight(); y++) {
+				board.board[x][y].updateTileImage();
 			}
 		}
 		return board;

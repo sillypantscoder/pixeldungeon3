@@ -40,9 +40,7 @@ public class Surface {
 		g2d.dispose();
 	}
 	public Surface crop(int x, int y, int width, int height) {
-		Surface n = new Surface(width, height, Color.BLACK);
-		n.blit(this, x, y);
-		return n;
+		return new Surface(img.getSubimage(x, y, width, height)).copy();
 	}
 	public int get_width() {
 		return img.getWidth();
