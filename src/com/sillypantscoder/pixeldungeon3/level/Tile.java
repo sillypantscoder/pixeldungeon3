@@ -18,7 +18,7 @@ public class Tile {
 		this.type = type;
 		this.x = x;
 		this.y = y;
-		this.lightStatus = LightStatus.Current;
+		this.lightStatus = LightStatus.Unknown;
 		if (image == null) {
 			try {
 				image = TextureLoader.loadAsset("tiles0.png");

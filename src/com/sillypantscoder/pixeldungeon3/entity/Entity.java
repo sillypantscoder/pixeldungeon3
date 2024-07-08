@@ -3,6 +3,7 @@ package com.sillypantscoder.pixeldungeon3.entity;
 import java.util.Optional;
 
 import com.sillypantscoder.pixeldungeon3.Game;
+import com.sillypantscoder.pixeldungeon3.level.Tile;
 
 public abstract class Entity {
 	public Game game;
@@ -27,5 +28,8 @@ public abstract class Entity {
 	@FunctionalInterface
 	public static interface EntityCreator<T extends Entity> {
 		public T create(Game game, int x, int y);
+	}
+	public Tile getTile() {
+		return game.level.board[this.x][this.y];
 	}
 }

@@ -2,7 +2,7 @@ package com.sillypantscoder.pixeldungeon3.level;
 
 import java.util.ArrayList;
 
-class LinePoints {
+public class LinePoints {
 	public static int[][] get_line(int[] start, int[] end) {
 		/* Bresenham's Line Algorithm
 		Produces a list of tuples from start and end

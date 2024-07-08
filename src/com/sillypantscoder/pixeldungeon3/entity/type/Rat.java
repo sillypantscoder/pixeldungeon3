@@ -1,6 +1,7 @@
 package com.sillypantscoder.pixeldungeon3.entity.type;
 
 import com.sillypantscoder.pixeldungeon3.Game;
+import com.sillypantscoder.pixeldungeon3.Random;
 import com.sillypantscoder.pixeldungeon3.entity.Action;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.Spritesheet;
@@ -12,11 +13,12 @@ public class Rat extends Entity {
 	}
 	public void requestAction() {
 		if (target == null) {
-			target = game.getRandomPlayer();
+			target = Random.choice(game.level.getPlayers());
 		}
 		int[][] path = game.level.findPath(this.x, this.y, target.x, target.y);
 		if (path.length == 0) {
 			this.setAction(new Action.SleepAction(this));
+			this.target = null;
 			return;
 		}
 		int[] nextTarget = path[1];

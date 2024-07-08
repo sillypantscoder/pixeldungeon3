@@ -1,14 +1,15 @@
 package com.sillypantscoder.pixeldungeon3;
 
 import java.awt.Color;
-import java.util.ArrayList;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.type.Player;
 import com.sillypantscoder.pixeldungeon3.entity.type.Rat;
 import com.sillypantscoder.pixeldungeon3.level.Level;
+import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.SubdivisionLevelGeneration;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.window.Surface;
@@ -28,6 +29,8 @@ public class Game {
 		turn = player;
 		// Spawn a rat
 		spawn(Rat::new);
+		// Update light
+		level.updateLight();
 	}
 	public<T extends Entity> T spawn(Entity.EntityCreator<T> creator) {
 		int[] spawn = level.getSpawnLocation();
@@ -36,6 +39,7 @@ public class Game {
 		return freshEntity.get();
 	}
 	public void tick() {
+		AtomicBoolean needsLightRefresh = new AtomicBoolean();
 		// 1. Handle clicks
 		//		TODO: handle clicks
 		// 2. Get an action if possible
@@ -43,12 +47,18 @@ public class Game {
 			// 2a. Request an action
 			turn.requestAction();
 			// 2b. Initiate the action
-			turn.action.ifPresent((a) -> a.initiate());
+			turn.action.ifPresent((a) -> {
+				a.initiate();
+				turn.action.ifPresent((b) -> needsLightRefresh.set(true));
+			});
 		}
 		// 3. For each entity:
 		for (int i = 0; i < level.entities.size(); i++) {
 			// 3a. Tick the action
-			level.entities.get(i).action.ifPresent((a) -> a.tick());
+			level.entities.get(i).action.ifPresent((a) -> {
+				a.tick();
+				needsLightRefresh.set(true);
+			});
 			// 3b. Check whether the action can be removed
 			if (level.entities.get(i).action.map((a) -> a.canBeRemoved()).orElse(false)) {
 				level.entities.get(i).action = Optional.empty();
@@ -66,6 +76,10 @@ public class Game {
 				turn = next;
 				canContinue = false;
 			}
+		}
+		// 5. Update light, if necessary
+		if (needsLightRefresh.get()) {
+			this.level.updateLight();
 		}
 	}
 	public Entity getNextEntity() {
@@ -93,7 +107,10 @@ public class Game {
 		// 		TODO: add items
 		// 3. Draw the actors
 		for (int i = 0; i < level.entities.size(); i++) {
-			level.entities.get(i).actor.draw(s);
+			Entity e = level.entities.get(i);
+			if (e.getTile().lightStatus == LightStatus.Current) {
+				level.entities.get(i).actor.draw(s);
+			}
 		}
 		// 4. Draw the particles
 		// 		TODO: add particles
@@ -113,14 +130,5 @@ public class Game {
 			int worldY = y / Tile.TILE_SIZE;
 			turnPlayer.click(worldX, worldY);
 		}
-	}
-	public Player getRandomPlayer() {
-		ArrayList<Player> players = new ArrayList<Player>();
-		for (int i = 0; i < level.entities.size(); i++) {
-			if (level.entities.get(i) instanceof Player p) {
-				players.add(p);
-			}
-		}
-		return Random.choice(players);
 	}
 }
