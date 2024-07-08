@@ -20,5 +20,6 @@ public class MainWindow extends Window {
 		return s;
 	}
 	public void mouseClicked(MouseEvent e) {
+		this.game.click(e.getX(), e.getY());
 	}
 }

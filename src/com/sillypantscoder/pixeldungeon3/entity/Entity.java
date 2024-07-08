@@ -19,6 +19,13 @@ public abstract class Entity {
 		this.action = Optional.empty();
 		this.actor = new Actor(x, y, getSpritesheet());
 	}
+	public void setAction(Action action) {
+		this.action = Optional.ofNullable(action);
+	}
 	public abstract void requestAction();
 	public abstract Spritesheet getSpritesheet();
+	@FunctionalInterface
+	public static interface EntityCreator<T extends Entity> {
+		public T create(Game game, int x, int y);
+	}
 }

@@ -2,6 +2,7 @@ package com.sillypantscoder.pixeldungeon3;
 
 import java.awt.Color;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.type.Player;
@@ -18,14 +19,16 @@ public class Game {
 	public Game() {
 		level = SubdivisionLevelGeneration.generateLevel();
 		// Spawn a player
-		int[] spawn = level.getSpawnLocation();
-		player = new Player(this, spawn[0], spawn[1]);
-		level.entities.add(player);
+		player = spawn(Player::new);
 		turn = player;
 		// Spawn a rat
-		int[] spawn2 = level.getSpawnLocation();
-		Rat rat = new Rat(this, spawn2[0], spawn2[1]);
-		level.entities.add(rat);
+		spawn(Rat::new);
+	}
+	public<T extends Entity> T spawn(Entity.EntityCreator<T> creator) {
+		int[] spawn = level.getSpawnLocation();
+		AtomicReference<T> freshEntity = new AtomicReference<T>(creator.create(this, spawn[0], spawn[1]));
+		level.entities.add(freshEntity.get());
+		return freshEntity.get();
 	}
 	public void tick() {
 		// 1. Handle clicks
@@ -75,5 +78,12 @@ public class Game {
 			time = Math.max(time, level.entities.get(i).time);
 		}
 		return time + 5;
+	}
+	public void click(int x, int y) {
+		if (this.turn instanceof Player turnPlayer) {
+			int worldX = x / Tile.TILE_SIZE;
+			int worldY = y / Tile.TILE_SIZE;
+			turnPlayer.click(worldX, worldY);
+		}
 	}
 }
