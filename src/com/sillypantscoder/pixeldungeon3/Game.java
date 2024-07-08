@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.type.Player;
+import com.sillypantscoder.pixeldungeon3.entity.type.Rat;
 import com.sillypantscoder.pixeldungeon3.level.Level;
 import com.sillypantscoder.pixeldungeon3.level.SubdivisionLevelGeneration;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
@@ -15,10 +16,15 @@ public class Game {
 	public Entity turn;
 	public Game() {
 		level = SubdivisionLevelGeneration.generateLevel();
+		// Spawn a player
 		int[] spawn = level.getSpawnLocation();
 		player = new Player(this, spawn[0], spawn[1]);
 		level.entities.add(player);
 		turn = player;
+		// Spawn a rat
+		int[] spawn2 = level.getSpawnLocation();
+		Rat rat = new Rat(this, spawn2[0], spawn2[1]);
+		level.entities.add(rat);
 	}
 	public void tick() {
 		// 1. Handle clicks

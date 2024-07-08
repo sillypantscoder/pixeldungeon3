@@ -15,7 +15,7 @@ import java.awt.geom.AffineTransform;
 
 public class TextureLoader {
 	public static Surface loadAsset(String filename) throws IOException {
-		File f = AssetLoader.getResource(filename);
+		File f = AssetLoader.getResource("image/" + filename);
 		BufferedImage image = ImageIO.read(f);
 		return new Surface(image);
 	}

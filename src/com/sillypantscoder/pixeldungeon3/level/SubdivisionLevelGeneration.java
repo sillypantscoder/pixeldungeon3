@@ -17,12 +17,11 @@ public class SubdivisionLevelGeneration {
 		}
 	}
 	public static Level generateLevel() {
-		int worldSize = 100;
+		int worldSize = 60;
 		worldSize /= 2;
 		ArrayList<Rect> rectsToDivide = new ArrayList<Rect>();
 		ArrayList<Rect> resultRects = new ArrayList<Rect>();
 		rectsToDivide.add(new Rect(0, 0, worldSize, worldSize));
-		int minRoomSize = 5;
 		// Divide
 		while (rectsToDivide.size() > 0) {
 			@SuppressWarnings("unchecked")
@@ -30,36 +29,32 @@ public class SubdivisionLevelGeneration {
 			rectsToDivide = new ArrayList<Rect>();
 			for (int i = 0; i < loopRects.size(); i++) {
 				Rect r = loopRects.get(i);
+				boolean discardRect = false;
+				// If the rect has no area, remove it
 				if (r.w == 0 || r.h == 0) {
 					// Aaaaaa!
 					rectsToDivide.remove(r);
 					continue;
 				}
-				if (r.w < minRoomSize || r.h < minRoomSize) {
-					// Aaaaaa!
+				// If the rect is too small to be divided further, finish it
+				if (r.w < 3 || r.h < 3) discardRect = true;
+				// If the rect is generally small enough, finish it
+				if (r.w < 7 && r.h < 7) discardRect = true;
+				// Handle the rect
+				if (discardRect) {
 					rectsToDivide.remove(r);
-					//i -= 1;
 					resultRects.add(r);
-					continue;
-				}
-				// Chance to stop dividing the room
-				if (Math.random() < (minRoomSize * minRoomSize) / (r.w * r.h)) {
-					rectsToDivide.remove(r);
-					//i -= 1;
-					resultRects.add(r);
-					continue;
-				}
-				// Divide the rect
-				Rect[] newRects = r.subdivide();
-				for (int n = 0; n < newRects.length; n++) {
-					rectsToDivide.add(newRects[n]);
+				} else {
+					// Divide the rect
+					Rect[] newRects = r.subdivide();
+					for (int n = 0; n < newRects.length; n++) {
+						rectsToDivide.add(newRects[n]);
+					}
 				}
 			}
 		}
 		// Create the board
-		System.out.println("Creating level");
 		Level board = new Level((worldSize * 2) + 1, (worldSize * 2) + 1);
-		System.out.println("Writing level...");
 		for (int i = 0; i < resultRects.size(); i++) {
 			// Top
 			for (int x = resultRects.get(i).left() * 2; x < resultRects.get(i).right() * 2; x++) board.board[x][resultRects.get(i).top() * 2].type = TileType.Wall;
@@ -103,7 +98,6 @@ public class SubdivisionLevelGeneration {
 				}
 			}
 		}
-		System.out.println("Finished generation");
 		for (int x = 0; x < board.getWidth(); x++) {
 			for (int y = 0; y < board.getHeight(); y++) {
 				board.board[x][y].updateTileImage();
@@ -168,13 +162,13 @@ class Rect {
 			doSplitVertical = Math.random() < 0.5;
 		}
 		if (doSplitVertical) {
-			int split = Random.randint(1, w - 1);
+			int split = Random.randint(2, w - 2);
 			return new Rect[] {
 				new Rect(x, y, split, h),
 				new Rect(x + split, y, w - split, h)
 			};
 		} else {
-			int split = Random.randint(1, h - 1);
+			int split = Random.randint(2, h - 2);
 			return new Rect[] {
 				new Rect(x, y, w, split),
 				new Rect(x, y + split, w, h - split)
