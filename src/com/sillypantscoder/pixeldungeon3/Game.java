@@ -123,11 +123,11 @@ public class Game {
 		level.draw(s);
 		// 2. Draw the items
 		// 		TODO: add items
-		// 3. Draw the actors
+		// 3. Draw the entities
 		for (int i = 0; i < level.entities.size(); i++) {
 			Entity e = level.entities.get(i);
 			if (e.getTile().lightStatus == LightStatus.Current) {
-				level.entities.get(i).actor.draw(s);
+				level.entities.get(i).draw(s);
 			}
 		}
 		// 4. Draw the particles

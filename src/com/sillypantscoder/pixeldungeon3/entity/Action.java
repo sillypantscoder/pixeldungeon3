@@ -100,6 +100,7 @@ public abstract class Action {
 			// Animation:
 			target.actor.animate("action");
 			maxTime = target.actor.sheet.entries.get("action").surfaces.length;
+			if (this.attackTarget.x != this.target.x) target.actor.direction = this.attackTarget.x > this.target.x;
 		}
 		public void onTick() {
 			// Finish

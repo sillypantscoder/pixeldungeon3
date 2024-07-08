@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
+import com.sillypantscoder.window.Surface;
 
 public abstract class Entity {
 	public Game game;
@@ -44,5 +45,11 @@ public abstract class Entity {
 	}
 	public void remove() {
 		game.level.entities.remove(this);
+	}
+	public void draw(Surface s) {
+		// Draw actor
+		this.actor.draw(s);
+		// TODO: Health bar
+		// TODO: Damage text thingys
 	}
 }

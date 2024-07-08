@@ -13,7 +13,9 @@ public class Rat extends Entity {
 	}
 	public void requestAction() {
 		if (target == null) {
-			target = Random.choice(game.level.getPlayers());
+			if (game.level.getPlayers().size() > 0) {
+				target = Random.choice(game.level.getPlayers());
+			}
 		}
 		int[][] path = game.level.findPath(this.x, this.y, target.x, target.y, false);
 		if (path.length == 0) {
@@ -22,7 +24,12 @@ public class Rat extends Entity {
 			return;
 		}
 		int[] nextTarget = path[1];
-		this.setAction(new Action.MoveAction(this, nextTarget[0], nextTarget[1]));
+		if (nextTarget[0] == target.x && nextTarget[1] == target.y) {
+			// Attack!
+			this.setAction(new Action.AttackAction(this, target));
+		} else {
+			this.setAction(new Action.MoveAction(this, nextTarget[0], nextTarget[1]));
+		}
 	}
 	public Spritesheet getSpritesheet() {
 		return Spritesheet.read("rat");
