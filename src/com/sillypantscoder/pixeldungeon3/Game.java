@@ -28,8 +28,8 @@ public class Game {
 		// Spawn a player
 		player = spawn(Player::new);
 		turn = player;
-		// Spawn a rat
-		spawn(Rat::new);
+		// Spawn 10 rats
+		for (int i = 0; i < 10; i++) spawn(Rat::new);
 		// Update light
 		level.updateLight();
 	}

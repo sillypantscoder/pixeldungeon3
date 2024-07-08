@@ -65,6 +65,7 @@ public abstract class Action {
 			maxTime = 7;
 			target.game.canContinue = true;
 			target.actor.animate("move");
+			if (this.newX != this.oldX) target.actor.direction = this.newX > this.oldX;
 		}
 		public void onTick() {
 			double frac = ticks / (double)(maxTime);

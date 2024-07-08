@@ -9,12 +9,17 @@ public class Actor {
 	public String animationName;
 	public int animationPos;
 	public Spritesheet sheet;
+	/**
+	 * False = left; True = right
+	 */
+	public boolean direction;
 	public Actor(double x, double y, Spritesheet sheet) {
 		this.x = x;
 		this.y = y;
 		this.animationName = "idle";
 		this.animationPos = 0;
 		this.sheet = sheet;
+		this.direction = true;
 	}
 	public void tick() {
 		animationPos += 1;
@@ -26,7 +31,9 @@ public class Actor {
 	}
 	public Surface getImage() {
 		int realAnimationPos = animationPos / 6;
-		return sheet.entries.get(animationName).surfaces[realAnimationPos];
+		Surface s = sheet.entries.get(animationName).surfaces[realAnimationPos];
+		if (!direction) s = s.flipHorizontally();
+		return s;
 	}
 	public void draw(Surface s) {
 		s.blit(getImage(), (int)(this.x * Tile.TILE_SIZE), (int)(this.y * Tile.TILE_SIZE));

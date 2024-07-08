@@ -98,6 +98,13 @@ public class Surface {
 		BufferedImage newImg = op.filter(this.img, null);
 		return new Surface(newImg);
 	}
+	public Surface flipHorizontally() {
+		BufferedImage newImg = new BufferedImage(this.img.getWidth(), this.img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = newImg.createGraphics();
+		g2d.drawImage(this.img, this.img.getWidth(), 0, 0, this.img.getHeight(), 0, 0, this.img.getWidth(), this.img.getHeight(), null);
+		g2d.dispose();
+		return new Surface(newImg);
+	}
 	public void writeToFile(String filename) throws IOException {
 		File outputfile = new File(filename);
 		ImageIO.write(img, "png", outputfile);
