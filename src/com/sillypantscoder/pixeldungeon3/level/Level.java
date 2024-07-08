@@ -85,4 +85,11 @@ public class Level {
 	public boolean outOfBounds(int[] location) {
 		return location[0] < 0 || location[1] < 0 || location[0] >= getWidth() || location[1] >= getHeight();
 	}
+	public boolean outOfBounds(int x, int y) {
+		return x < 0 || y < 0 || x >= getWidth() || y >= getHeight();
+	}
+	public Tile get_at(int x, int y) {
+		if (outOfBounds(x, y)) return null;
+		return board[x][y];
+	}
 }

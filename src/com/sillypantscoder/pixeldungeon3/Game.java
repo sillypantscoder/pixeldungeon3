@@ -22,6 +22,7 @@ public class Game {
 	 * Whether the current action is functionally complete and other actions may be run.
 	 */
 	public boolean canContinue;
+	public int[] recentSize;
 	public Game() {
 		level = SubdivisionLevelGeneration.generateLevel();
 		// Spawn a player
@@ -41,7 +42,7 @@ public class Game {
 	public void tick() {
 		AtomicBoolean needsLightRefresh = new AtomicBoolean();
 		// 1. Handle clicks
-		//		TODO: handle clicks
+		//		TODO: handle clicks more
 		// 2. Get an action if possible
 		if (! turn.action.isPresent()) {
 			// 2a. Request an action
@@ -49,7 +50,11 @@ public class Game {
 			// 2b. Initiate the action
 			turn.action.ifPresent((a) -> {
 				a.initiate();
-				turn.action.ifPresent((b) -> needsLightRefresh.set(true));
+				needsLightRefresh.set(true);
+				// 2c. Check whether the action can immediately be removed
+				if (a.canBeRemoved()) {
+					turn.action = Optional.empty();
+				}
 			});
 		}
 		// 3. For each entity:
@@ -93,10 +98,21 @@ public class Game {
 		}
 		return nextEntity;
 	}
+	public int[] getCameraPos(int width, int height) {
+		double tileWidth = width / (double)(Tile.TILE_SIZE);
+		double tileHeight = height / (double)(Tile.TILE_SIZE);
+		double tileCamX = (player.actor.x + 0.5) - (tileWidth / 2d);
+		double tileCamY = (player.actor.y + 0.5) - (tileHeight / 2d);
+		return new int[] {
+			(int)(tileCamX * Tile.TILE_SIZE),
+			(int)(tileCamY * Tile.TILE_SIZE)
+		};
+	}
 	public Surface render(int width, int height) {
+		recentSize = new int[] { width, height };
 		Surface s = new Surface(width, height, Color.BLACK);
-		s.blit(renderWorld(), 0, 0);
-		// TODO: camera movement
+		int[] cameraPos = getCameraPos(width, height);
+		s.blit(renderWorld(), -cameraPos[0], -cameraPos[1]);
 		return s;
 	}
 	public Surface renderWorld() {
@@ -126,8 +142,11 @@ public class Game {
 	}
 	public void click(int x, int y) {
 		if (this.turn instanceof Player turnPlayer) {
-			int worldX = x / Tile.TILE_SIZE;
-			int worldY = y / Tile.TILE_SIZE;
+			int[] camera = getCameraPos(recentSize[0], recentSize[1]);
+			int pixelXWithCamera = x + camera[0];
+			int pixelYWithCamera = y + camera[1];
+			int worldX = pixelXWithCamera / Tile.TILE_SIZE;
+			int worldY = pixelYWithCamera / Tile.TILE_SIZE;
 			turnPlayer.click(worldX, worldY);
 		}
 	}

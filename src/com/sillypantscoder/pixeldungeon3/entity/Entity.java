@@ -30,6 +30,6 @@ public abstract class Entity {
 		public T create(Game game, int x, int y);
 	}
 	public Tile getTile() {
-		return game.level.board[this.x][this.y];
+		return game.level.get_at(this.x, this.y);
 	}
 }
