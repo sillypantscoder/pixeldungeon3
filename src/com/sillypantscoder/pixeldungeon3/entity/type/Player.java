@@ -9,40 +9,59 @@ import com.sillypantscoder.pixeldungeon3.level.LinePoints;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 
 public class Player extends Entity {
-	public Action selectedAction;
+	public int[] targetLocation;
+	public Entity targetEntity;
 	public Player(Game game, int x, int y) {
 		super(game, x, y);
-		selectedAction = null;
+		targetLocation = null;
+		targetEntity = null;
 	}
 	public void requestAction() {
-		this.setAction(selectedAction);
-		this.selectedAction = null;
+		this.actor.animate("idle");
+		if (this.targetLocation != null) {
+			// Pathfind to selected location
+			this.requestPathfind(this.targetLocation[0], this.targetLocation[1]);
+		} else if (this.targetEntity != null) {
+			// Pathfind to selected entity
+			this.requestPathfind(this.targetEntity.x, this.targetEntity.y);
+		}
+	}
+	public void requestPathfind(int targetX, int targetY) {
+		int[][] path = game.level.findPath(this.x, this.y, targetX, targetY, true);
+		if (path.length == 0) {
+			this.targetLocation = null;
+			return;
+		}
+		if (path.length == 1) {
+			this.targetLocation = null;
+			return;
+		}
+		if (path.length == 2) {
+			this.targetLocation = null;
+		}
+		int[] nextTarget = path[1];
+		this.setAction(new Action.MoveAction(this, nextTarget[0], nextTarget[1]));
 	}
 	public Spritesheet getSpritesheet() {
 		return Spritesheet.read("player");
 	}
 	public void click(int worldX, int worldY) {
-		int xDiff = worldX - this.x;
-		int yDiff = worldY - this.y;
-		if (Math.abs(xDiff) > Math.abs(yDiff)) {
-			// Tap on X direction
-			if (xDiff < 0) {
-				// Left
-				this.selectedAction = Action.MoveAction.createFromDelta(this, -1, 0);
-			} else {
-				// Right
-				this.selectedAction = Action.MoveAction.createFromDelta(this, 1, 0);
-			}
-		} else {
-			// Tap on Y direction
-			if (yDiff < 0) {
-				// Up
-				this.selectedAction = Action.MoveAction.createFromDelta(this, 0, -1);
-			} else {
-				// Down
-				this.selectedAction = Action.MoveAction.createFromDelta(this, 0, 1);
+		if (targetLocation != null || targetEntity != null) {
+			// Cancel
+			targetLocation = null;
+			targetEntity = null;
+			return;
+		}
+		// Move to entity
+		for (int i = 0; i < game.level.entities.size(); i++) {
+			Entity e = game.level.entities.get(i);
+			if (e.x == worldX && e.y == worldY) {
+				targetEntity = e;
+				return;
 			}
 		}
+		// Move to location
+		targetLocation = new int[] { worldX, worldY };
 	}
 	// Lighting
 	public int getViewDistance() {

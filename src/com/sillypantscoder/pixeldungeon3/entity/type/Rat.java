@@ -15,7 +15,7 @@ public class Rat extends Entity {
 		if (target == null) {
 			target = Random.choice(game.level.getPlayers());
 		}
-		int[][] path = game.level.findPath(this.x, this.y, target.x, target.y);
+		int[][] path = game.level.findPath(this.x, this.y, target.x, target.y, false);
 		if (path.length == 0) {
 			this.setAction(new Action.SleepAction(this));
 			this.target = null;

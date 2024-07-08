@@ -79,14 +79,10 @@ class Walker {
 	}
 	public Walker[] walk(int[][] board) {
 		ArrayList<Walker> items = new ArrayList<Walker>();
-		for (int cx = -1; cx <= 1; cx++) {
-			for (int cy = -1; cy <= 1; cy++) {
-				if (cx + x >= 0 && cy + y >= 0 && cx + x < board.length && cy + y < board[cx + x].length) {
-					if (!(cx == 0 && cy == 0)) {
-						if (board[cx + x][cy + y] > 0) {
-							items.add(new Walker(cx + x, cy + y, score + board[cx + x][cy + y], path));
-						}
-					}
+		for (int cx : new int[] { 0, -1, 1 }) {
+			for (int cy : new int[] { 0, -1, 1 }) {
+				if (!(cx == 0 && cy == 0)) {
+					walkAtPoint(board, new int[] { cx + x, cy + y }, items);
 				}
 			}
 		}
@@ -100,5 +96,12 @@ class Walker {
 			// System.out.println(items.get(i).y);
 		}
 		return ret;
+	}
+	public void walkAtPoint(int[][] board, int[] pos, ArrayList<Walker> items) {
+		if (pos[0] >= 0 && pos[1] >= 0 && pos[0] < board.length && pos[1] < board[pos[0]].length) {
+			if (board[pos[0]][pos[1]] > 0) {
+				items.add(new Walker(pos[0], pos[1], score + board[pos[0]][pos[1]], path));
+			}
+		}
 	}
 }

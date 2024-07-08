@@ -45,15 +45,17 @@ public class Level {
 	public int getHeight() {
 		return board.length > 0 ? board[0].length : 0;
 	}
-	public int[][] findPath(int startX, int startY, int endX, int endY) {
+	public int[][] findPath(int startX, int startY, int endX, int endY, boolean playerOnly) {
 		int[][] nboard = new int[getWidth()][getHeight()];
 		for (int x = 0; x < nboard.length; x++) {
 			for (int y = 0; y < nboard[x].length; y++) {
 				TileType type = this.board[x][y].type;
+				LightStatus light = this.board[x][y].lightStatus;
 				int weight = 0;
 				if (type == TileType.Chasm) weight = 0;
 				if (type == TileType.Ground) weight = 1;
 				if (type == TileType.Wall) weight = 0;
+				if (playerOnly && light == LightStatus.Unknown) weight = 0;
 				nboard[x][y] = weight;
 			}
 		}

@@ -28,7 +28,7 @@ public abstract class Action {
 		public void initiate() {
 			target.time += 1;
 			target.game.canContinue = true;
-			// TODO: un-animate moving
+			target.actor.animate("idle");
 		}
 		public void onTick() {
 		}
@@ -62,8 +62,9 @@ public abstract class Action {
 			target.y = newY;
 			target.time += 1;
 			// Animation:
-			maxTime = 5;
+			maxTime = 7;
 			target.game.canContinue = true;
+			target.actor.animate("move");
 		}
 		public void onTick() {
 			double frac = ticks / (double)(maxTime);
