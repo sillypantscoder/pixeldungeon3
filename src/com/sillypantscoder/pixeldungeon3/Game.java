@@ -3,6 +3,7 @@ package com.sillypantscoder.pixeldungeon3;
 import java.awt.Color;
 
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
+import com.sillypantscoder.pixeldungeon3.entity.type.Player;
 import com.sillypantscoder.pixeldungeon3.level.Level;
 import com.sillypantscoder.pixeldungeon3.level.SubdivisionLevelGeneration;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
@@ -10,18 +11,14 @@ import com.sillypantscoder.window.Surface;
 
 public class Game {
 	public Level level;
-	public Entity player;
+	public Player player;
 	public Entity turn;
 	public Game() {
 		level = SubdivisionLevelGeneration.generateLevel();
 		int[] spawn = level.getSpawnLocation();
-		Entity player = new Entity(this, spawn[0], spawn[1]) {
-			public void requestAction() {
-			}
-		};
+		player = new Player(this, spawn[0], spawn[1]);
 		level.entities.add(player);
 		turn = player;
-		this.player = player;
 	}
 	public void tick() {
 		// 1. Handle clicks
@@ -35,7 +32,7 @@ public class Game {
 			// 4a. Tick the action
 			level.entities.get(i).action.ifPresent((a) -> a.tick());
 			// 4b. Tick the actor
-			// 		TODO: add actor ticking
+			level.entities.get(i).actor.tick();
 		}
 		// 5. Check if we can go to the next entity yet
 		// 		TODO: go to next entity

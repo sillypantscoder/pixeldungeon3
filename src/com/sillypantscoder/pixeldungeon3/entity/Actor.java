@@ -6,13 +6,29 @@ import com.sillypantscoder.window.Surface;
 public class Actor {
 	public double x;
 	public double y;
-	public Surface texture;
-	public Actor(double x, double y, Surface texture) {
+	public String animationName;
+	public int animationPos;
+	public Spritesheet sheet;
+	public Actor(double x, double y, Spritesheet sheet) {
 		this.x = x;
 		this.y = y;
-		this.texture = texture;
+		this.animationName = "idle";
+		this.animationPos = 0;
+		this.sheet = sheet;
+	}
+	public void tick() {
+		animationPos += 1;
+		int realAnimationPos = animationPos / 16;
+		if (realAnimationPos >= sheet.entries.get(animationName).surfaces.length) {
+			animationPos = 0;
+			animationName = sheet.entries.get(animationName).next;
+		}
+	}
+	public Surface getImage() {
+		int realAnimationPos = animationPos / 16;
+		return sheet.entries.get(animationName).surfaces[realAnimationPos];
 	}
 	public void draw(Surface s) {
-		s.blit(texture, (int)(this.x * Tile.TILE_SIZE), (int)(this.y * Tile.TILE_SIZE));
+		s.blit(getImage(), (int)(this.x * Tile.TILE_SIZE), (int)(this.y * Tile.TILE_SIZE));
 	}
 }

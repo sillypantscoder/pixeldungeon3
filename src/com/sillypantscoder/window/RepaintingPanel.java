@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -28,7 +29,17 @@ public class RepaintingPanel extends JPanel {
 	*/
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(painter.apply(getWidth(), getHeight()), 0, 0, new DummyImageObserver());
+		try {
+			g.drawImage(painter.apply(getWidth(), getHeight()), 0, 0, new DummyImageObserver());
+		} catch (Throwable t) {
+			t.printStackTrace();
+			try {
+				// set debugger on next line
+				Thread.sleep(Duration.ofSeconds(1));
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	// public abstract void mouseClicked(MouseEvent e);
 	// public abstract void mouseMoved(MouseEvent e);

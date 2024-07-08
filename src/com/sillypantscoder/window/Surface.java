@@ -40,7 +40,9 @@ public class Surface {
 		g2d.dispose();
 	}
 	public Surface crop(int x, int y, int width, int height) {
-		return new Surface(img.getSubimage(x, y, width, height)).copy();
+		Surface n = new Surface(width, height, new Color(0, 0, 0, 0));
+		n.blit(this, -x, -y);
+		return n;
 	}
 	public int get_width() {
 		return img.getWidth();
@@ -49,7 +51,7 @@ public class Surface {
 		return img.getHeight();
 	}
 	public Surface copy() {
-		Surface r = new Surface(get_width(), get_height(), Color.BLACK);
+		Surface r = new Surface(get_width(), get_height(), new Color(0, 0, 0, 0));
 		r.blit(this, 0, 0);
 		return r;
 	}
