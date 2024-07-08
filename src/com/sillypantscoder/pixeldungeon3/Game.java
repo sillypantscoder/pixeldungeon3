@@ -1,6 +1,7 @@
 package com.sillypantscoder.pixeldungeon3;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -16,6 +17,10 @@ public class Game {
 	public Level level;
 	public Player player;
 	public Entity turn;
+	/**
+	 * Whether the current action is functionally complete and other actions may be run.
+	 */
+	public boolean canContinue;
 	public Game() {
 		level = SubdivisionLevelGeneration.generateLevel();
 		// Spawn a player
@@ -33,23 +38,46 @@ public class Game {
 	public void tick() {
 		// 1. Handle clicks
 		//		TODO: handle clicks
-		// 2. Request an action
-		turn.requestAction();
-		// 3. Initiate the action
-		turn.action.ifPresent((a) -> a.initiate());
-		// 4. For each entity:
+		// 2. Get an action if possible
+		if (! turn.action.isPresent()) {
+			// 2a. Request an action
+			turn.requestAction();
+			// 2b. Initiate the action
+			turn.action.ifPresent((a) -> a.initiate());
+		}
+		// 3. For each entity:
 		for (int i = 0; i < level.entities.size(); i++) {
-			// 4a. Tick the action
+			// 3a. Tick the action
 			level.entities.get(i).action.ifPresent((a) -> a.tick());
-			// 4b. Check whether the action can be removed
+			// 3b. Check whether the action can be removed
 			if (level.entities.get(i).action.map((a) -> a.canBeRemoved()).orElse(false)) {
 				level.entities.get(i).action = Optional.empty();
 			}
-			// 4c. Tick the actor
+			// 3c. Tick the actor
 			level.entities.get(i).actor.tick();
 		}
-		// 5. Check if we can go to the next entity yet
-		// 		TODO: go to next entity
+		// 4. Check if we can go to the next entity yet
+		// 4a. Make sure this action can continue
+		if (canContinue) {
+			// 4b. Make sure the new entity does not have an action at all
+			Entity next = getNextEntity();
+			if (! next.action.isPresent()) {
+				// 4c. Switch!
+				turn = next;
+				canContinue = false;
+			}
+		}
+	}
+	public Entity getNextEntity() {
+		Entity nextEntity = null;
+		int lowestTime = Integer.MAX_VALUE;
+		for (Entity entity : level.entities) {
+			if (entity.time < lowestTime) {
+				lowestTime = entity.time;
+				nextEntity = entity;
+			}
+		}
+		return nextEntity;
 	}
 	public Surface render(int width, int height) {
 		Surface s = new Surface(width, height, Color.BLACK);
@@ -85,5 +113,14 @@ public class Game {
 			int worldY = y / Tile.TILE_SIZE;
 			turnPlayer.click(worldX, worldY);
 		}
+	}
+	public Player getRandomPlayer() {
+		ArrayList<Player> players = new ArrayList<Player>();
+		for (int i = 0; i < level.entities.size(); i++) {
+			if (level.entities.get(i) instanceof Player p) {
+				players.add(p);
+			}
+		}
+		return Random.choice(players);
 	}
 }
