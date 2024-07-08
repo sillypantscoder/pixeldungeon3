@@ -1,6 +1,7 @@
 package com.sillypantscoder.pixeldungeon3;
 
 import java.awt.Color;
+import java.util.Optional;
 
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.type.Player;
@@ -37,7 +38,11 @@ public class Game {
 		for (int i = 0; i < level.entities.size(); i++) {
 			// 4a. Tick the action
 			level.entities.get(i).action.ifPresent((a) -> a.tick());
-			// 4b. Tick the actor
+			// 4b. Check whether the action can be removed
+			if (level.entities.get(i).action.map((a) -> a.canBeRemoved()).orElse(false)) {
+				level.entities.get(i).action = Optional.empty();
+			}
+			// 4c. Tick the actor
 			level.entities.get(i).actor.tick();
 		}
 		// 5. Check if we can go to the next entity yet
@@ -63,5 +68,12 @@ public class Game {
 		// 		TODO: add particles
 		// Finish
 		return s;
+	}
+	public int getSpawnTime() {
+		int time = 0;
+		for (int i = 0; i < level.entities.size(); i++) {
+			time = Math.max(time, level.entities.get(i).time);
+		}
+		return time + 5;
 	}
 }

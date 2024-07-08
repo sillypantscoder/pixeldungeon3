@@ -15,6 +15,7 @@ public abstract class Entity {
 		this.game = game;
 		this.x = x;
 		this.y = y;
+		this.time = game.getSpawnTime();
 		this.action = Optional.empty();
 		this.actor = new Actor(x, y, getSpritesheet());
 	}
