@@ -23,7 +23,13 @@ public class Player extends Entity {
 			this.requestPathfind(this.targetLocation[0], this.targetLocation[1]);
 		} else if (this.targetEntity != null) {
 			// Pathfind to selected entity
-			this.requestPathfind(this.targetEntity.x, this.targetEntity.y);
+			if (Math.abs(this.x - this.targetEntity.x) <= 1 && Math.abs(this.y - targetEntity.y) <= 1) {
+				// Attack!
+				this.setAction(new Action.AttackAction(this, targetEntity));
+				this.targetEntity = null;
+			} else {
+				this.requestPathfind(this.targetEntity.x, this.targetEntity.y);
+			}
 		}
 	}
 	public void requestPathfind(int targetX, int targetY) {
@@ -45,6 +51,12 @@ public class Player extends Entity {
 	public Spritesheet getSpritesheet() {
 		return Spritesheet.read("player");
 	}
+	public int getMaxHealth() {
+		return 10;
+	}
+	public int getDamage() {
+		return 3;
+	}
 	public void click(int worldX, int worldY) {
 		if (targetLocation != null || targetEntity != null) {
 			// Cancel
@@ -55,7 +67,7 @@ public class Player extends Entity {
 		// Move to entity
 		for (int i = 0; i < game.level.entities.size(); i++) {
 			Entity e = game.level.entities.get(i);
-			if (e.x == worldX && e.y == worldY) {
+			if (e.x == worldX && e.y == worldY && e != this) {
 				targetEntity = e;
 				return;
 			}

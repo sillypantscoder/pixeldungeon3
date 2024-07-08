@@ -27,4 +27,10 @@ public class Rat extends Entity {
 	public Spritesheet getSpritesheet() {
 		return Spritesheet.read("rat");
 	}
+	public int getMaxHealth() {
+		return 4;
+	}
+	public int getDamage() {
+		return 2;
+	}
 }

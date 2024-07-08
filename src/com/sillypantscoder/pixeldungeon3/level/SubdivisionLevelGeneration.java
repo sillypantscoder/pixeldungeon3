@@ -17,7 +17,7 @@ public class SubdivisionLevelGeneration {
 		}
 	}
 	public static Level generateLevel() {
-		int worldSize = 60;
+		int worldSize = 40;
 		worldSize /= 2;
 		ArrayList<Rect> rectsToDivide = new ArrayList<Rect>();
 		ArrayList<Rect> resultRects = new ArrayList<Rect>();

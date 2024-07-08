@@ -60,7 +60,7 @@ public abstract class Action {
 			this.oldY = target.actor.y;
 			target.x = newX;
 			target.y = newY;
-			target.time += 1;
+			target.time += 10;
 			// Animation:
 			maxTime = 7;
 			target.game.canContinue = true;
@@ -81,6 +81,33 @@ public abstract class Action {
 		}
 		public boolean canBeRemoved() {
 			if (! validTarget()) return true;
+			return ticks > maxTime;
+		}
+	}
+	public static class AttackAction extends Action {
+		public Entity attackTarget;
+		public int maxTime;
+		public AttackAction(Entity attacker, Entity attackTarget) {
+			super(attacker);
+			this.attackTarget = attackTarget;
+		}
+		public void initiate() {
+			target.time += 5;
+			System.out.println(attackTarget.health);
+			attackTarget.health -= this.target.getDamage();
+			System.out.println(attackTarget.health);
+			if (attackTarget.health <= 0) attackTarget.die();
+			// Animation:
+			target.actor.animate("action");
+			maxTime = target.actor.sheet.entries.get("action").surfaces.length;
+		}
+		public void onTick() {
+			// Finish
+			if (ticks >= maxTime) {
+				target.game.canContinue = true;
+			}
+		}
+		public boolean canBeRemoved() {
 			return ticks > maxTime;
 		}
 	}

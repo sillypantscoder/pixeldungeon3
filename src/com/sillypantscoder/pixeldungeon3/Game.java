@@ -28,61 +28,63 @@ public class Game {
 		// Spawn a player
 		player = spawn(Player::new);
 		turn = player;
-		// Spawn 10 rats
-		for (int i = 0; i < 10; i++) spawn(Rat::new);
+		// Spawn some rats
+		spawn(Rat::new, player.x + 2, player.y + 1);
+		for (int i = 0; i < 5; i++) spawn(Rat::new);
 		// Update light
 		level.updateLight();
 	}
 	public<T extends Entity> T spawn(Entity.EntityCreator<T> creator) {
 		int[] spawn = level.getSpawnLocation();
-		AtomicReference<T> freshEntity = new AtomicReference<T>(creator.create(this, spawn[0], spawn[1]));
+		return spawn(creator, spawn[0], spawn[1]);
+	}
+	public<T extends Entity> T spawn(Entity.EntityCreator<T> creator, int x, int y) {
+		AtomicReference<T> freshEntity = new AtomicReference<T>(creator.create(this, x, y));
 		level.entities.add(freshEntity.get());
 		return freshEntity.get();
 	}
 	public void tick() {
 		AtomicBoolean needsLightRefresh = new AtomicBoolean();
-		// 1. Handle clicks
-		//		TODO: handle clicks more
-		// 2. Get an action if possible
+		// 1. Get an action if possible
 		if (! turn.action.isPresent()) {
-			// 2a. Request an action
+			// 1a. Request an action
 			turn.requestAction();
-			// 2b. Initiate the action
+			// 1b. Initiate the action
 			turn.action.ifPresent((a) -> {
 				a.initiate();
 				needsLightRefresh.set(true);
-				// 2c. Check whether the action can immediately be removed
+				// 1c. Check whether the action can immediately be removed
 				if (a.canBeRemoved()) {
 					turn.action = Optional.empty();
 				}
 			});
 		}
-		// 3. For each entity:
+		// 2. For each entity:
 		for (int i = 0; i < level.entities.size(); i++) {
-			// 3a. Tick the action
+			// 2a. Tick the action
 			level.entities.get(i).action.ifPresent((a) -> {
 				a.tick();
 				needsLightRefresh.set(true);
 			});
-			// 3b. Check whether the action can be removed
+			// 2b. Check whether the action can be removed
 			if (level.entities.get(i).action.map((a) -> a.canBeRemoved()).orElse(false)) {
 				level.entities.get(i).action = Optional.empty();
 			}
-			// 3c. Tick the actor
+			// 2c. Tick the actor
 			level.entities.get(i).actor.tick();
 		}
-		// 4. Check if we can go to the next entity yet
-		// 4a. Make sure this action can continue
+		// 3. Check if we can go to the next entity yet
+		// 3a. Make sure this action can continue
 		if (canContinue) {
-			// 4b. Make sure the new entity does not have an action at all
+			// 3b. Make sure the new entity does not have an action at all
 			Entity next = getNextEntity();
 			if (! next.action.isPresent()) {
-				// 4c. Switch!
+				// 3c. Switch!
 				turn = next;
 				canContinue = false;
 			}
 		}
-		// 5. Update light, if necessary
+		// 4. Update light, if necessary
 		if (needsLightRefresh.get()) {
 			this.level.updateLight();
 		}
@@ -138,7 +140,7 @@ public class Game {
 		for (int i = 0; i < level.entities.size(); i++) {
 			time = Math.max(time, level.entities.get(i).time);
 		}
-		return time + 5;
+		return time + 15;
 	}
 	public void click(int x, int y) {
 		if (this.turn instanceof Player turnPlayer) {
