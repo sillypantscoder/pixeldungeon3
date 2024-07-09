@@ -37,4 +37,10 @@ public class Utils {
 	public static double map(double x, double fromStart, double fromEnd, double toStart, double toEnd) {
 		return (x - fromStart) / (fromEnd - fromStart) * (toEnd - toStart) + toStart;
 	}
+	public static double[] normalize(double x, double y) {
+		double dist = Math.sqrt((x * x) + (y * y));
+		double newX = x / dist;
+		double newY = y / dist;
+		return new double[] { newX, newY };
+	}
 }

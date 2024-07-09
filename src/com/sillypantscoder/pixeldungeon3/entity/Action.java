@@ -1,6 +1,7 @@
 package com.sillypantscoder.pixeldungeon3.entity;
 
 import com.sillypantscoder.pixeldungeon3.level.Tile;
+import com.sillypantscoder.pixeldungeon3.particle.AttackParticle;
 import com.sillypantscoder.pixeldungeon3.utils.Utils;
 
 public abstract class Action {
@@ -26,7 +27,7 @@ public abstract class Action {
 			super(target);
 		}
 		public void initiate() {
-			target.time += 1;
+			target.time += 10;
 			target.game.canContinue = true;
 			target.actor.animate("idle");
 		}
@@ -98,7 +99,10 @@ public abstract class Action {
 			// Animation:
 			target.actor.animate("action");
 			maxTime = target.actor.sheet.entries.get("action").surfaces.length;
+			maxTime = Math.max(maxTime, 20);
 			if (this.attackTarget.x != this.target.x) target.actor.direction = this.attackTarget.x > this.target.x;
+			// Particles:
+			this.target.game.particles.addAll(AttackParticle.createCluster(target, attackTarget));
 		}
 		public void onTick() {
 			// Finish

@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.awt.Graphics2D;
 
 import javax.imageio.ImageIO;
@@ -14,10 +15,17 @@ import java.awt.image.WritableRaster;
 import java.awt.geom.AffineTransform;
 
 public class TextureLoader {
+	protected static HashMap<String, Surface> cache = new HashMap<String, Surface>();
 	public static Surface loadAsset(String filename) throws IOException {
-		File f = AssetLoader.getResource("image/" + filename);
-		BufferedImage image = ImageIO.read(f);
-		return new Surface(image);
+		if (cache.containsKey(filename)) {
+			return cache.get(filename).copy();
+		} else {
+			File f = AssetLoader.getResource("image/" + filename);
+			BufferedImage image = ImageIO.read(f);
+			Surface result = new Surface(image);
+			cache.put(filename, result);
+			return result;
+		}
 	}
 	public static BufferedImage flipVertical(BufferedImage image) {
 		AffineTransform at = new AffineTransform();

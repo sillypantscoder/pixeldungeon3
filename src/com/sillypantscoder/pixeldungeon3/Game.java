@@ -1,6 +1,7 @@
 package com.sillypantscoder.pixeldungeon3;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -12,10 +13,12 @@ import com.sillypantscoder.pixeldungeon3.level.Level;
 import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.SubdivisionLevelGeneration;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
+import com.sillypantscoder.pixeldungeon3.particle.Particle;
 import com.sillypantscoder.window.Surface;
 
 public class Game {
 	public Level level;
+	public ArrayList<Particle> particles;
 	public Player player;
 	public Entity turn;
 	/**
@@ -27,6 +30,7 @@ public class Game {
 	public int[] recentSize;
 	public Game() {
 		level = new Level(this, SubdivisionLevelGeneration.generateLevel());
+		particles = new ArrayList<Particle>();
 		needsLightRefresh = new AtomicBoolean(true);
 		// Spawn a player
 		player = spawn(Player::new);
@@ -56,6 +60,8 @@ public class Game {
 		}
 		tickAllEntities();
 		goToNextEntityIfPossible();
+		// Then tick the particles:
+		tickAllParticles();
 	}
 	public boolean getAndInitiateActionFromCurrentEntity() {
 		AtomicBoolean canFastSwitch = new AtomicBoolean();
@@ -104,6 +110,16 @@ public class Game {
 			}
 		}
 		return false;
+	}
+	public void tickAllParticles() {
+		for (int i = 0; i < particles.size(); i++) {
+			Particle p = particles.get(i);
+			boolean canBeRemoved = p.tick();
+			if (canBeRemoved) {
+				particles.remove(p);
+				i -= 1;
+			}
+		}
 	}
 	public Entity getNextEntity() {
 		Entity nextEntity = null;
@@ -155,7 +171,10 @@ public class Game {
 			}
 		}
 		// 4. Draw the particles
-		// 		TODO: add particles
+		for (int i = 0; i < particles.size(); i++) {
+			Particle p = particles.get(i);
+			p.draw(s);
+		}
 		// Finish
 		return s;
 	}
@@ -164,7 +183,7 @@ public class Game {
 		for (int i = 0; i < level.entities.size(); i++) {
 			time = Math.max(time, level.entities.get(i).time);
 		}
-		return time + 15;
+		return time + 5;
 	}
 	public void click(int x, int y) {
 		if (this.turn instanceof Player turnPlayer) {
