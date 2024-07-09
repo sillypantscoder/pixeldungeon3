@@ -1,10 +1,13 @@
 package com.sillypantscoder.pixeldungeon3.entity.type;
 
+import java.util.ArrayList;
+
 import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.Random;
 import com.sillypantscoder.pixeldungeon3.entity.Action;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.Spritesheet;
+import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 
 public class Rat extends Entity {
 	public Player target;
@@ -13,9 +16,18 @@ public class Rat extends Entity {
 	}
 	public void requestAction() {
 		if (target == null) {
-			if (game.level.getPlayers().size() > 0) {
-				target = Random.choice(game.level.getPlayers());
+			// If someone can see us...
+			if (this.getTile().lightStatus == LightStatus.Current) {
+				// Choose a target
+				ArrayList<Player> allPlayers = game.level.getPlayers();
+				if (allPlayers.size() > 0) {
+					target = Random.choice(allPlayers);
+				}
 			}
+		}
+		if (target == null) {
+			this.setAction(new Action.SleepAction(this));
+			return;
 		}
 		int[][] path = game.level.findPath(this.x, this.y, target.x, target.y, false);
 		if (path.length == 0) {

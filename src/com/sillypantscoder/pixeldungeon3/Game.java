@@ -22,17 +22,18 @@ public class Game {
 	 * Whether the current action is functionally complete and other actions may be run.
 	 */
 	public boolean canContinue;
+	public int timeLeft;
+	public AtomicBoolean needsLightRefresh;
 	public int[] recentSize;
 	public Game() {
 		level = SubdivisionLevelGeneration.generateLevel();
+		needsLightRefresh = new AtomicBoolean(true);
 		// Spawn a player
 		player = spawn(Player::new);
 		turn = player;
 		// Spawn some rats
 		spawn(Rat::new, player.x + 2, player.y + 1);
-		for (int i = 0; i < 5; i++) spawn(Rat::new);
-		// Update light
-		level.updateLight();
+		for (int i = 0; i < 50; i++) spawn(Rat::new);
 	}
 	public<T extends Entity> T spawn(Entity.EntityCreator<T> creator) {
 		int[] spawn = level.getSpawnLocation();
@@ -44,8 +45,22 @@ public class Game {
 		return freshEntity.get();
 	}
 	public void tick() {
-		AtomicBoolean needsLightRefresh = new AtomicBoolean();
-		// 1. Get an action if possible
+		/**
+		 * If true, indicates that the current entity's action has completed immediately,
+		 * 	and it is possible to go immediately to the next entity.
+		 */
+		boolean canFastSwitch = getAndInitiateActionFromCurrentEntity();
+		// If we can go to the next entity...
+		for (int i = 0; i < 100 && canFastSwitch && goToNextEntityIfPossible(); i++) {
+			// ...switch and restart the tick.
+			canFastSwitch = getAndInitiateActionFromCurrentEntity();
+		}
+		tickAllEntities();
+		goToNextEntityIfPossible();
+	}
+	public boolean getAndInitiateActionFromCurrentEntity() {
+		AtomicBoolean canFastSwitch = new AtomicBoolean();
+		// If we already have an action, we don't need to get a new one
 		if (! turn.action.isPresent()) {
 			// 1a. Request an action
 			turn.requestAction();
@@ -56,10 +71,14 @@ public class Game {
 				// 1c. Check whether the action can immediately be removed
 				if (a.canBeRemoved()) {
 					turn.action = Optional.empty();
+					canFastSwitch.set(true);
 				}
 			});
 		}
-		// 2. For each entity:
+		return canFastSwitch.get();
+	}
+	public void tickAllEntities() {
+		// For each entity...
 		for (int i = 0; i < level.entities.size(); i++) {
 			// 2a. Tick the action
 			level.entities.get(i).action.ifPresent((a) -> {
@@ -73,8 +92,8 @@ public class Game {
 			// 2c. Tick the actor
 			level.entities.get(i).actor.tick();
 		}
-		// 3. Check if we can go to the next entity yet
-		// 3a. Make sure this action can continue
+	}
+	public boolean goToNextEntityIfPossible() {
 		if (canContinue) {
 			// 3b. Make sure the new entity does not have an action at all
 			Entity next = getNextEntity();
@@ -82,12 +101,10 @@ public class Game {
 				// 3c. Switch!
 				turn = next;
 				canContinue = false;
+				return true;
 			}
 		}
-		// 4. Update light, if necessary
-		if (needsLightRefresh.get()) {
-			this.level.updateLight();
-		}
+		return false;
 	}
 	public Entity getNextEntity() {
 		Entity nextEntity = null;
@@ -111,10 +128,18 @@ public class Game {
 		};
 	}
 	public Surface render(int width, int height) {
+		// Update light, if necessary
+		if (needsLightRefresh.get()) {
+			this.level.updateLight();
+			needsLightRefresh.set(false);
+		}
+		// Update recent size and create surface
 		recentSize = new int[] { width, height };
 		Surface s = new Surface(width, height, Color.BLACK);
+		// Render the world
 		int[] cameraPos = getCameraPos(width, height);
 		s.blit(renderWorld(), -cameraPos[0], -cameraPos[1]);
+		// Return
 		return s;
 	}
 	public Surface renderWorld() {

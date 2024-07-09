@@ -52,7 +52,7 @@ public class Player extends Entity {
 		return Spritesheet.read("player");
 	}
 	public int getMaxHealth() {
-		return 10;
+		return 1000;
 	}
 	public int getDamage() {
 		return 3;
@@ -101,5 +101,19 @@ public class Player extends Entity {
 			}
 			tile.lightStatus = LightStatus.Current;
 		}
+	}
+	public boolean canSee(int cx, int cy) {
+		int[][] points = LinePoints.get_line(new int[] { this.x, this.y }, new int[] { cx, cy });
+		for (int i = 0; i < points.length; i++) {
+			if (game.level.outOfBounds(points[i])) continue;
+			Tile tile = game.level.board[points[i][0]][points[i][1]];
+			if (points[i][0] == cx && points[i][1] == cy) {
+				return true;
+			}
+			if (! tile.type.canSeeThrough()) {
+				return false;
+			}
+		}
+		return false;
 	}
 }

@@ -93,9 +93,7 @@ public abstract class Action {
 		}
 		public void initiate() {
 			target.time += 5;
-			System.out.println(attackTarget.health);
 			attackTarget.health -= this.target.getDamage();
-			System.out.println(attackTarget.health);
 			if (attackTarget.health <= 0) attackTarget.die();
 			// Animation:
 			target.actor.animate("action");
