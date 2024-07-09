@@ -2,6 +2,7 @@ package com.sillypantscoder.window;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -121,9 +122,12 @@ public class Surface {
 		}
 	}
 	public static Surface renderText(int size, String text, Color color) {
+		// Get font
+		Font font = new Font("Monospaced", 0, size);
 		// Measure the text
 		Surface measure = new Surface(1, 1, Color.BLACK);
 		Graphics2D big = (Graphics2D)(measure.img.getGraphics());
+		big.setFont(font);
 		FontMetrics fm = big.getFontMetrics();
 		Surface ret = new Surface(fm.stringWidth(text), fm.getHeight(), new Color(0, 0, 0, 0));
 		// Draw the text
@@ -131,6 +135,7 @@ public class Surface {
 			Graphics2D g2d = ret.img.createGraphics();
 			g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 			g2d.setColor(color);
+			g2d.setFont(font);
 			g2d.drawString(text, 0, fm.getAscent());
 			g2d.dispose();
 		} catch (IllegalArgumentException e) {
@@ -138,6 +143,18 @@ public class Surface {
 		}
 		// Finish
 		return ret;
+	}
+	public static Surface renderMultilineText(int size, String text, Color color) {
+		String[] t = text.split("\n");
+		ArrayList<Surface> surfaces = new ArrayList<Surface>();
+		for (int i = 0; i < t.length; i++) {
+			if (t[i].length() == 0) {
+				surfaces.add(new Surface(1, size, new Color(0, 0, 0, 0)));
+				continue;
+			}
+			surfaces.add(renderText(size, t[i], color));
+		}
+		return combineVertically(surfaces, new Color(0, 0, 0, 0));
 	}
 	public static Surface combineVertically(ArrayList<Surface> surfaces, Color background) {
 		int width = 1;

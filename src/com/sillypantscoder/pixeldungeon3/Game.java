@@ -28,10 +28,12 @@ public class Game {
 	public int timeLeft;
 	public AtomicBoolean needsLightRefresh;
 	public int[] recentSize;
+	public int[] mousePos;
 	public Game() {
 		level = new Level(this, SubdivisionLevelGeneration.generateLevel());
 		particles = new ArrayList<Particle>();
 		needsLightRefresh = new AtomicBoolean(true);
+		mousePos = new int[] { 100, 100 };
 		// Spawn a player
 		player = spawn(Player::new);
 		turn = player;
@@ -48,19 +50,22 @@ public class Game {
 		return freshEntity.get();
 	}
 	public void tick() {
-		/**
-		 * If true, indicates that the current entity's action has completed immediately,
-		 * 	and it is possible to go immediately to the next entity.
-		 */
-		boolean canFastSwitch = getAndInitiateActionFromCurrentEntity();
-		// If we can go to the next entity...
-		for (int i = 0; i < 100 && canFastSwitch && goToNextEntityIfPossible(); i++) {
-			// ...switch and restart the tick.
-			canFastSwitch = getAndInitiateActionFromCurrentEntity();
+		if (! canContinue) {
+			/**
+			 * If true, indicates that the current entity's action has completed immediately,
+			 * 	and it is possible to go immediately to the next entity.
+			 */
+			boolean canFastSwitch = getAndInitiateActionFromCurrentEntity();
+			// If we can go to the next entity...
+			for (int i = 0; i < 100 && canFastSwitch; i++) {
+				boolean succeeded = goToNextEntityIfPossible();
+				if (! succeeded) break;
+				// ...switch and restart the tick.
+				canFastSwitch = getAndInitiateActionFromCurrentEntity();
+			}
 		}
 		tickAllEntities();
 		goToNextEntityIfPossible();
-		// Then tick the particles:
 		tickAllParticles();
 	}
 	public boolean getAndInitiateActionFromCurrentEntity() {
@@ -154,6 +159,25 @@ public class Game {
 		// Render the world
 		int[] cameraPos = getCameraPos(width, height);
 		s.blit(renderWorld(), -cameraPos[0], -cameraPos[1]);
+		// Draw the mouse data
+		int mouseX = (int)((double)(mousePos[0] + cameraPos[0]) / Tile.TILE_SIZE);
+		int mouseY = (int)((double)(mousePos[1] + cameraPos[1]) / Tile.TILE_SIZE);
+		String text = "X: " + mouseX + " Y: " + mouseY;
+		if (! level.outOfBounds(mouseX, mouseY)) {
+			Tile t = level.get_at(mouseX, mouseY);
+			s.drawRect(Color.RED, (mouseX * Tile.TILE_SIZE) - cameraPos[0], (mouseY * Tile.TILE_SIZE) - cameraPos[1], Tile.TILE_SIZE, Tile.TILE_SIZE, 1);
+			text += "\n\nTile\nType: " + t.type.name() +
+				"\nLight: " + t.lightStatus.name();
+		}
+		Entity e = level.getEntity(mouseX, mouseY);
+		if (e != null) {
+			text += "\n\nEntity\nHealth: " + e.health + "/" + e.maxHealth;
+			if (e instanceof Rat rat) {
+				text += "\nStatus: " + rat.state.name();
+			}
+			text += "\nTime: " + e.time;
+		}
+		s.blit(Surface.renderMultilineText(15, text, Color.RED), 0, 0);
 		// Return
 		return s;
 	}
@@ -183,7 +207,7 @@ public class Game {
 		for (int i = 0; i < level.entities.size(); i++) {
 			time = Math.max(time, level.entities.get(i).time);
 		}
-		return time + 5;
+		return time + 1;
 	}
 	public void click(int x, int y) {
 		if (this.turn instanceof Player turnPlayer) {

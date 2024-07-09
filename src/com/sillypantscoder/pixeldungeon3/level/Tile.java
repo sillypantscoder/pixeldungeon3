@@ -3,7 +3,6 @@ package com.sillypantscoder.pixeldungeon3.level;
 import java.io.IOException;
 
 import com.sillypantscoder.pixeldungeon3.Game;
-import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.utils.TextureLoader;
 import com.sillypantscoder.window.Surface;
 
@@ -63,13 +62,7 @@ public class Tile {
 	}
 	public boolean occupied() {
 		if (this.game.level == null) return false;
-		for (int i = 0; i < game.level.entities.size(); i++) {
-			Entity e = game.level.entities.get(i);
-			if (e.x == x && e.y == y) {
-				return true;
-			}
-		}
-		return false;
+		return this.game.level.getEntity(x, y) != null;
 	}
 	public Surface draw() {
 		if (this.type == TileType.Door && this.lightStatus != LightStatus.Unknown) updateTileImage();

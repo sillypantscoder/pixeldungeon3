@@ -22,4 +22,7 @@ public class MainWindow extends Window {
 	public void mouseClicked(MouseEvent e) {
 		this.game.click(e.getX(), e.getY());
 	}
+	public void mouseMoved(MouseEvent e) {
+		this.game.mousePos = new int[] { e.getX(), e.getY() };
+	}
 }

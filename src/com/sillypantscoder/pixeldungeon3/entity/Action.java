@@ -98,8 +98,7 @@ public abstract class Action {
 			if (attackTarget.health <= 0) attackTarget.die();
 			// Animation:
 			target.actor.animate("action");
-			maxTime = target.actor.sheet.entries.get("action").surfaces.length;
-			maxTime = Math.max(maxTime, 20);
+			maxTime = 10;
 			if (this.attackTarget.x != this.target.x) target.actor.direction = this.attackTarget.x > this.target.x;
 			// Particles:
 			this.target.game.particles.addAll(AttackParticle.createCluster(target, attackTarget));

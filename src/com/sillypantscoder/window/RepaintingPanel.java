@@ -24,6 +24,7 @@ public class RepaintingPanel extends JPanel {
 	protected static JFrame frame;
 	public BiFunction<Integer, Integer, BufferedImage> painter;
 	public Consumer<MouseEvent> mouseClicked;
+	public Consumer<MouseEvent> mouseMoved;
 	/**
 	* Called by the runtime system whenever the panel needs painting.
 	*/
@@ -116,6 +117,6 @@ class mouseMotionListener implements MouseMotionListener {
 
 	@Override
 	public void mouseMoved(MouseEvent arg0) {
-		// srcPanel.mouseMoved.accept(arg0);
+		srcPanel.mouseMoved.accept(arg0);
 	}
 }

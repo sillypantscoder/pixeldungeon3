@@ -106,4 +106,13 @@ public class Level {
 		if (outOfBounds(x, y)) return null;
 		return board[x][y];
 	}
+	public Entity getEntity(int x, int y) {
+		for (int i = 0; i < this.entities.size(); i++) {
+			Entity e = this.entities.get(i);
+			if (e.x == x && e.y == y) {
+				return e;
+			}
+		}
+		return null;
+	}
 }

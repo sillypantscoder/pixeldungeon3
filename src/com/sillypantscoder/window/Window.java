@@ -9,6 +9,7 @@ public abstract class Window {
 		panel = new RepaintingPanel();
 		panel.painter = this::painter;
 		panel.mouseClicked = this::mouseClicked;
+		panel.mouseMoved = this::mouseMoved;
 	}
 	public void open(String title, int width, int height) {
 		panel.run(title, width, height);
@@ -18,4 +19,5 @@ public abstract class Window {
 	}
 	public abstract Surface frame(int width, int height);
 	public abstract void mouseClicked(MouseEvent e);
+	public abstract void mouseMoved(MouseEvent e);
 }
