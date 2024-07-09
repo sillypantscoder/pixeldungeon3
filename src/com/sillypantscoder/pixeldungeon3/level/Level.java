@@ -2,6 +2,7 @@ package com.sillypantscoder.pixeldungeon3.level;
 
 import java.util.ArrayList;
 
+import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.Random;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.type.Player;
@@ -11,14 +12,24 @@ import com.sillypantscoder.window.Surface;
 public class Level {
 	public Tile[][] board;
 	public ArrayList<Entity> entities;
-	public Level(int width, int height) {
-		board = new Tile[width][height];
+	public Level(Game game, TileType[][] layout) {
+		board = new Tile[layout.length][layout[0].length];
 		for (int x = 0; x < board.length; x++) {
 			for (int y = 0; y < board[x].length; y++) {
-				board[x][y] = new Tile(TileType.Ground, x, y);
+				board[x][y] = new Tile(game, layout[x][y], x, y);
+				board[x][y].updateTileImage();
 			}
 		}
 		entities = new ArrayList<Entity>();
+	}
+	public static TileType[][] generateBoard(int width, int height) {
+		TileType[][] layout = new TileType[width][height];
+		for (int x = 0; x < layout.length; x++) {
+			for (int y = 0; y < layout[x].length; y++) {
+				layout[x][y] = TileType.Ground;
+			}
+		}
+		return layout;
 	}
 	public void draw(Surface s) {
 		for (int x = 0; x < board.length; x++) {
@@ -55,6 +66,7 @@ public class Level {
 				if (type == TileType.Chasm) weight = 0;
 				if (type == TileType.Ground) weight = 1;
 				if (type == TileType.Wall) weight = 0;
+				if (type == TileType.Door) weight = 1;
 				if (playerOnly && light == LightStatus.Unknown) weight = 0;
 				nboard[x][y] = weight;
 			}

@@ -80,6 +80,7 @@ public class Player extends Entity {
 		return 7;
 	}
 	public void addLight() {
+		game.level.board[x][y].lightStatus = LightStatus.Current;
 		int vd = getViewDistance();
 		for (int cx = -vd; cx <= vd; cx++) {
 			for (int cy = -vd; cy <= vd; cy++) {
@@ -89,7 +90,7 @@ public class Player extends Entity {
 	}
 	protected void checkForLight(int cx, int cy) {
 		int[][] points = LinePoints.get_line(new int[] { this.x, this.y }, new int[] { cx, cy });
-		for (int i = 0; i < points.length; i++) {
+		for (int i = 1; i < points.length; i++) {
 			if (game.level.outOfBounds(points[i])) continue;
 			Tile tile = game.level.board[points[i][0]][points[i][1]];
 			if (points[i][0] == cx && points[i][1] == cy) {

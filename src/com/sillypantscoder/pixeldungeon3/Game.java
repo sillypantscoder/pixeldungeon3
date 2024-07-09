@@ -26,13 +26,12 @@ public class Game {
 	public AtomicBoolean needsLightRefresh;
 	public int[] recentSize;
 	public Game() {
-		level = SubdivisionLevelGeneration.generateLevel();
+		level = new Level(this, SubdivisionLevelGeneration.generateLevel());
 		needsLightRefresh = new AtomicBoolean(true);
 		// Spawn a player
 		player = spawn(Player::new);
 		turn = player;
 		// Spawn some rats
-		spawn(Rat::new, player.x + 2, player.y + 1);
 		for (int i = 0; i < 50; i++) spawn(Rat::new);
 	}
 	public<T extends Entity> T spawn(Entity.EntityCreator<T> creator) {

@@ -5,10 +5,12 @@ import java.util.Arrays;
 public enum TileType {
 	Chasm,
 	Ground,
-	Wall;
+	Wall,
+	Door;
 	public boolean walkable() {
 		return Arrays.stream(new TileType[] {
-			TileType.Ground
+			TileType.Ground,
+			TileType.Door
 		}).anyMatch(this::equals);
 	}
 	public boolean canSeeThrough() {

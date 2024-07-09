@@ -2,11 +2,14 @@ package com.sillypantscoder.pixeldungeon3.level;
 
 import java.io.IOException;
 
+import com.sillypantscoder.pixeldungeon3.Game;
+import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.utils.TextureLoader;
 import com.sillypantscoder.window.Surface;
 
 public class Tile {
 	public static final int TILE_SIZE = 16;
+	public Game game;
 	public TileType type;
 	public LightStatus lightStatus;
 	public int x;
@@ -14,7 +17,8 @@ public class Tile {
 	protected static Surface image;
 	protected Surface cacheTileImage;
 	protected LightStatus cacheLightStatus;
-	public Tile(TileType type, int x, int y) {
+	public Tile(Game game, TileType type, int x, int y) {
+		this.game = game;
 		this.type = type;
 		this.x = x;
 		this.y = y;
@@ -40,6 +44,10 @@ public class Tile {
 			case Wall:
 				srcPos = new int[] { 4, 0 };
 				break;
+			case Door:
+				srcPos = new int[] { 5, 0 };
+				if (occupied()) srcPos = new int[] { 6, 0 };
+				break;
 			default:
 				srcPos = new int[] { 15, 3 };
 		}
@@ -53,7 +61,18 @@ public class Tile {
 		this.cacheTileImage = newImg;
 		this.cacheLightStatus = this.lightStatus;
 	}
+	public boolean occupied() {
+		if (this.game.level == null) return false;
+		for (int i = 0; i < game.level.entities.size(); i++) {
+			Entity e = game.level.entities.get(i);
+			if (e.x == x && e.y == y) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public Surface draw() {
+		if (this.type == TileType.Door && this.lightStatus != LightStatus.Unknown) updateTileImage();
 		if (this.cacheLightStatus != this.lightStatus) updateTileImage();
 		return cacheTileImage;
 	}
