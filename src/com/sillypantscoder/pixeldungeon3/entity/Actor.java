@@ -38,6 +38,11 @@ public class Actor {
 	public void draw(Surface s) {
 		s.blit(getImage(), (int)(this.x * Tile.TILE_SIZE), (int)(this.y * Tile.TILE_SIZE));
 	}
+	public void draw(Surface s, float opacity) {
+		Surface thisImage = getImage();
+		thisImage = thisImage.scaleValues(opacity);
+		s.blit(thisImage, (int)(this.x * Tile.TILE_SIZE), (int)(this.y * Tile.TILE_SIZE));
+	}
 	public void animate(String type) {
 		if (animationName == type) return;
 		animationName = type;

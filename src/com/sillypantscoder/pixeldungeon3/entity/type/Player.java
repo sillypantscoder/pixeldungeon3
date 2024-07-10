@@ -52,7 +52,7 @@ public class Player extends Entity {
 		return Spritesheet.read("player");
 	}
 	public int getMaxHealth() {
-		return 1000;
+		return 10;
 	}
 	public int getDamage() {
 		return 3;

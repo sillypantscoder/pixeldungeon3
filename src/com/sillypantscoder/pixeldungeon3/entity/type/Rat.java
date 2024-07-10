@@ -41,8 +41,11 @@ public class Rat extends Entity {
 			findNewTarget();
 			if (target != null) state = EnemyState.HUNTING;
 		} else if (state == EnemyState.HUNTING) {
-			// Hunting: Pathfind to, or attack, the target.
-			requestHuntingAction();
+			// Hunting: Pathfind to, or attack, the target. If it's still alive.
+			if (! target.alive()) {
+				this.setAction(new Action.SleepAction(this));
+				state = EnemyState.WANDERING;
+			} else requestHuntingAction();
 		}
 	}
 	public void requestHuntingAction() {

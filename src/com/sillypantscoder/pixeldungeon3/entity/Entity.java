@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
+import com.sillypantscoder.pixeldungeon3.particle.DeathParticle;
 import com.sillypantscoder.window.Surface;
 
 public abstract class Entity {
@@ -42,7 +43,10 @@ public abstract class Entity {
 	}
 	public void die() {
 		this.remove();
-		// TODO: Death animation
+		game.particles.add(new DeathParticle(this));
+	}
+	public boolean alive() {
+		return game.level.entities.contains(this);
 	}
 	public void remove() {
 		game.level.entities.remove(this);

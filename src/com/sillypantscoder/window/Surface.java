@@ -95,7 +95,7 @@ public class Surface {
 		g2d.dispose();
 	}
 	public Surface scaleValues(float amount) {
-		RescaleOp op = new RescaleOp(amount, 0, null);
+		RescaleOp op = new RescaleOp(new float[] { amount, amount, amount, amount }, new float[] { 0, 0, 0, 0 }, null);
 		BufferedImage newImg = op.filter(this.img, null);
 		return new Surface(newImg);
 	}
