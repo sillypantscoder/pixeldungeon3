@@ -6,12 +6,14 @@ import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.Random;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.type.Player;
+import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
 import com.sillypantscoder.pixeldungeon3.utils.Pathfinding;
 import com.sillypantscoder.window.Surface;
 
 public class Level {
 	public Tile[][] board;
 	public ArrayList<Entity> entities;
+	public ArrayList<DroppedItem> items;
 	public Level(Game game, TileType[][] layout) {
 		board = new Tile[layout.length][layout[0].length];
 		for (int x = 0; x < board.length; x++) {
@@ -21,6 +23,7 @@ public class Level {
 			}
 		}
 		entities = new ArrayList<Entity>();
+		items = new ArrayList<DroppedItem>();
 	}
 	public static TileType[][] generateBoard(int width, int height) {
 		TileType[][] layout = new TileType[width][height];
@@ -111,6 +114,15 @@ public class Level {
 			Entity e = this.entities.get(i);
 			if (e.x == x && e.y == y) {
 				return e;
+			}
+		}
+		return null;
+	}
+	public DroppedItem getItem(int x, int y) {
+		for (int i = 0; i < this.items.size(); i++) {
+			DroppedItem m = this.items.get(i);
+			if (m.x == x && m.y == y) {
+				return m;
 			}
 		}
 		return null;

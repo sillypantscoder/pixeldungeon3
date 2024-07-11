@@ -8,7 +8,7 @@ import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.pixeldungeon3.particle.DeathParticle;
 import com.sillypantscoder.window.Surface;
 
-public abstract class Entity {
+public abstract class Entity implements PathfindTarget {
 	public Game game;
 	public int x;
 	public int y;
@@ -27,6 +27,8 @@ public abstract class Entity {
 		this.maxHealth = getMaxHealth();
 		this.health = this.maxHealth;
 	}
+	public int getX() { return x; }
+	public int getY() { return y; }
 	public void setAction(Action action) {
 		this.action = Optional.ofNullable(action);
 	}

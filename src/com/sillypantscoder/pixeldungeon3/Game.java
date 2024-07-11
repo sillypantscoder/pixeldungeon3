@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.type.Player;
 import com.sillypantscoder.pixeldungeon3.entity.type.Rat;
+import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
+import com.sillypantscoder.pixeldungeon3.item.Item;
 import com.sillypantscoder.pixeldungeon3.level.Level;
 import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.SubdivisionLevelGeneration;
@@ -137,6 +139,9 @@ public class Game {
 		}
 		return nextEntity;
 	}
+	public void drop(Item item, int x, int y) {
+		this.level.items.add(new DroppedItem(level, item, x, y));
+	}
 	public int[] getCameraPos(int width, int height) {
 		double tileWidth = width / (double)(Tile.TILE_SIZE);
 		double tileHeight = height / (double)(Tile.TILE_SIZE);
@@ -151,6 +156,7 @@ public class Game {
 		// Update light, if necessary
 		if (needsLightRefresh.get()) {
 			this.level.updateLight();
+			player.addLight();
 			needsLightRefresh.set(false);
 		}
 		// Update recent size and create surface
@@ -176,6 +182,16 @@ public class Game {
 				text += "\nStatus: " + rat.state.name();
 			}
 			text += "\nTime: " + e.time;
+			if (e instanceof Player player) {
+				text += "\n\nInventory:";
+				for (Item m : player.inventory) {
+					text += "\n- " + m.getName();
+				}
+			}
+		}
+		DroppedItem m = level.getItem(mouseX, mouseY);
+		if (m != null) {
+			text += "\n\nItem\nName: " + m.item.getName();
 		}
 		s.blit(Surface.renderMultilineText(15, text, Color.RED), 0, 0);
 		// Return
@@ -186,7 +202,12 @@ public class Game {
 		// 1. Draw the level
 		level.draw(s);
 		// 2. Draw the items
-		// 		TODO: add items
+		for (int i = 0; i < level.items.size(); i++) {
+			DroppedItem m = level.items.get(i);
+			if (m.getTile().lightStatus == LightStatus.Current) {
+				m.draw(s);
+			}
+		}
 		// 3. Draw the entities
 		for (int i = 0; i < level.entities.size(); i++) {
 			Entity e = level.entities.get(i);

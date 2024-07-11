@@ -1,52 +1,67 @@
 package com.sillypantscoder.pixeldungeon3.entity.type;
 
+import java.util.ArrayList;
+
 import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.entity.Action;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
+import com.sillypantscoder.pixeldungeon3.entity.PathfindTarget;
 import com.sillypantscoder.pixeldungeon3.entity.Spritesheet;
+import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
+import com.sillypantscoder.pixeldungeon3.item.Item;
 import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.LinePoints;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 
 public class Player extends Entity {
-	public int[] targetLocation;
-	public Entity targetEntity;
+	public PathfindTarget target;
+	public ArrayList<Item> inventory;
 	public Player(Game game, int x, int y) {
 		super(game, x, y);
-		targetLocation = null;
-		targetEntity = null;
+		target = null;
+		inventory = new ArrayList<Item>();
 	}
 	public void requestAction() {
 		this.actor.animate("idle");
-		if (this.targetLocation != null) {
-			// Pathfind to selected location
-			this.requestPathfind(this.targetLocation[0], this.targetLocation[1]);
-		} else if (this.targetEntity != null) {
-			// Pathfind to selected entity
-			if (Math.abs(this.x - this.targetEntity.x) <= 1 && Math.abs(this.y - targetEntity.y) <= 1) {
-				// Attack!
-				this.setAction(new Action.AttackAction(this, targetEntity));
-				this.targetEntity = null;
-			} else {
-				this.requestPathfind(this.targetEntity.x, this.targetEntity.y);
+		if (this.target != null) {
+			if (this.target instanceof Entity targetEntity) {
+				// Attack entity if close enough
+				if (Math.abs(this.x - targetEntity.x) <= 1 && Math.abs(this.y - targetEntity.y) <= 1) {
+					this.setAction(new Action.AttackAction(this, targetEntity));
+					this.target = null;
+					return;
+				}
 			}
+			if (this.target instanceof DroppedItem item) {
+				// Get item if close enough
+				if (this.x == item.x && this.y == item.y) {
+					this.setAction(new Action.PickupAction(this, item));
+					this.target = null;
+					return;
+				}
+			}
+			// Pathfind to selected location
+			this.requestPathfind(this.target.getX(), this.target.getY());
 		}
 	}
 	public void requestPathfind(int targetX, int targetY) {
+		if (this.x == targetX && this.y == targetY) {
+			target = null;
+			return;
+		}
 		int[][] path = game.level.findPath(this.x, this.y, targetX, targetY, true);
 		if (path.length == 0) {
-			this.targetLocation = null;
+			this.target = null;
 			return;
-		}
-		if (path.length == 1) {
-			this.targetLocation = null;
-			return;
-		}
-		if (path.length == 2) {
-			this.targetLocation = null;
 		}
 		int[] nextTarget = path[1];
 		this.setAction(new Action.MoveAction(this, nextTarget[0], nextTarget[1]));
+	}
+	public boolean hasPlainTarget() {
+		if (target == null) return false;
+		if (target instanceof Entity) return false;
+		if (target instanceof DroppedItem) return false;
+		return true;
 	}
 	public Spritesheet getSpritesheet() {
 		return Spritesheet.read("player");
@@ -58,22 +73,32 @@ public class Player extends Entity {
 		return 3;
 	}
 	public void click(int worldX, int worldY) {
-		if (targetLocation != null || targetEntity != null) {
+		if (target != null) {
 			// Cancel
-			targetLocation = null;
-			targetEntity = null;
+			target = null;
 			return;
 		}
 		// Move to entity
 		for (int i = 0; i < game.level.entities.size(); i++) {
 			Entity e = game.level.entities.get(i);
 			if (e.x == worldX && e.y == worldY && e != this) {
-				targetEntity = e;
+				target = e;
+				return;
+			}
+		}
+		// Move to item
+		for (int i = 0; i < game.level.items.size(); i++) {
+			DroppedItem m = game.level.items.get(i);
+			if (m.x == worldX && m.y == worldY) {
+				target = m;
 				return;
 			}
 		}
 		// Move to location
-		targetLocation = new int[] { worldX, worldY };
+		target = new PathfindTarget() {
+			public int getX() { return worldX; }
+			public int getY() { return worldY; }
+		};
 	}
 	// Lighting
 	public int getViewDistance() {

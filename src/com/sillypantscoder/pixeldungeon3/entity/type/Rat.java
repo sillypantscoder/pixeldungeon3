@@ -8,6 +8,7 @@ import com.sillypantscoder.pixeldungeon3.entity.Action;
 import com.sillypantscoder.pixeldungeon3.entity.EnemyState;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.pixeldungeon3.entity.Spritesheet;
+import com.sillypantscoder.pixeldungeon3.item.type.FoodRation;
 import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.window.Surface;
@@ -36,14 +37,19 @@ public class Rat extends Entity {
 			this.setAction(new Action.SleepAction(this));
 		} else if (state == EnemyState.WANDERING) {
 			// Wandering: Wander around and look for a target.
-			this.setAction(new Action.SleepAction(this));
-			// TODO: Wandering
+			this.setAction(Random.choice(new Action[] {
+				Action.MoveAction.createFromDelta(this, -1, 0),
+				Action.MoveAction.createFromDelta(this, 1, 0),
+				Action.MoveAction.createFromDelta(this, 0, -1),
+				Action.MoveAction.createFromDelta(this, 0, 1)
+			}));
 			findNewTarget();
 			if (target != null) state = EnemyState.HUNTING;
 		} else if (state == EnemyState.HUNTING) {
 			// Hunting: Pathfind to, or attack, the target. If it's still alive.
 			if (! target.alive()) {
 				this.setAction(new Action.SleepAction(this));
+				target = null;
 				state = EnemyState.WANDERING;
 			} else requestHuntingAction();
 		}
@@ -85,5 +91,9 @@ public class Rat extends Entity {
 		int iconX = (int)((this.x + 0.8) * Tile.TILE_SIZE);
 		int iconY = (int)((this.y - 0.1) * Tile.TILE_SIZE);
 		this.state.drawAnnotation(s, iconX, iconY);
+	}
+	public void die() {
+		super.die();
+		game.drop(new FoodRation(), this.x, this.y);
 	}
 }

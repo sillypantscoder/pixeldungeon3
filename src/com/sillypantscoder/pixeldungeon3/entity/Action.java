@@ -1,5 +1,7 @@
 package com.sillypantscoder.pixeldungeon3.entity;
 
+import com.sillypantscoder.pixeldungeon3.entity.type.Player;
+import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.pixeldungeon3.particle.AttackParticle;
 import com.sillypantscoder.pixeldungeon3.utils.Utils;
@@ -52,6 +54,7 @@ public abstract class Action {
 			return new MoveAction(target, deltaX + target.x, deltaY + target.y);
 		}
 		public boolean validTarget() {
+			if (target.game.level.outOfBounds(newX, newY)) return false;
 			Tile targetTile = target.game.level.get_at(newX, newY);
 			return targetTile.type.walkable();
 		}
@@ -108,6 +111,30 @@ public abstract class Action {
 			if (ticks >= maxTime) {
 				target.game.canContinue = true;
 			}
+		}
+		public boolean canBeRemoved() {
+			return ticks > maxTime;
+		}
+	}
+	public static class PickupAction extends Action {
+		public DroppedItem item;
+		public Player targetPlayer;
+		public int maxTime;
+		public PickupAction(Player target, DroppedItem item) {
+			super(target);
+			this.targetPlayer = target;
+			this.item = item;
+		}
+		public void initiate() {
+			target.time += 10;
+			targetPlayer.inventory.add(item.item);
+			item.remove();
+			target.game.canContinue = true;
+			// Animation:
+			target.actor.animate("action");
+			maxTime = 10;
+		}
+		public void onTick() {
 		}
 		public boolean canBeRemoved() {
 			return ticks > maxTime;
