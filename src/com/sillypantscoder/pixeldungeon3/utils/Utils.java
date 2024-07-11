@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Utils {
@@ -42,5 +43,12 @@ public class Utils {
 		double newX = x / dist;
 		double newY = y / dist;
 		return new double[] { newX, newY };
+	}
+	public static<T> ArrayList<T> arrayToArrayList(T[] items) {
+		ArrayList<T> arr = new ArrayList<T>();
+		for (T item : items) {
+			arr.add(item);
+		}
+		return arr;
 	}
 }

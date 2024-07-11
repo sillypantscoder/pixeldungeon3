@@ -13,6 +13,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import com.sillypantscoder.pixeldungeon3.utils.Utils;
+
 import java.util.ArrayList;
 import java.awt.RenderingHints;
 import java.awt.FontMetrics;
@@ -99,6 +101,15 @@ public class Surface {
 		BufferedImage newImg = op.filter(this.img, null);
 		return new Surface(newImg);
 	}
+	public Surface scale_size(int amount) {
+		int newWidth = this.img.getWidth() * amount;
+		int newHeight = this.img.getHeight() * amount;
+		BufferedImage newImg = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = newImg.createGraphics();
+		g2d.drawImage(this.img, 0, 0, newWidth, newHeight, 0, 0, this.img.getWidth(), this.img.getHeight(), null);
+		g2d.dispose();
+		return new Surface(newImg);
+	}
 	public Surface flipHorizontally() {
 		BufferedImage newImg = new BufferedImage(this.img.getWidth(), this.img.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = newImg.createGraphics();
@@ -169,6 +180,21 @@ public class Surface {
 		}
 		return total;
 	}
+	public static Surface combineVertically(Surface[] surfaces, Color background) { return combineVertically(Utils.arrayToArrayList(surfaces), background); }
+	public static Surface combineHorizontally(ArrayList<Surface> surfaces, Color background) {
+		int height = 1;
+		for (int i = 0; i < surfaces.size(); i++) { int h = surfaces.get(i).get_height(); if (h > height) { height = h; } }
+		int width = 1;
+		for (int i = 0; i < surfaces.size(); i++) { int w = surfaces.get(i).get_width(); width += w; }
+		Surface total = new Surface(width, height, background);
+		int cum_x = 0;
+		for (int i = 0; i < surfaces.size(); i++) {
+			total.blit(surfaces.get(i), cum_x, 0);
+			cum_x += surfaces.get(i).get_width();
+		}
+		return total;
+	}
+	public static Surface combineHorizontally(Surface[] surfaces, Color background) { return combineHorizontally(Utils.arrayToArrayList(surfaces), background); }
 	public static class DummyImageObserver implements ImageObserver {
 		public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
 			return false;

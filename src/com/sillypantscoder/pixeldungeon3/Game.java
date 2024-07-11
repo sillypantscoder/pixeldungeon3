@@ -31,11 +31,13 @@ public class Game {
 	public AtomicBoolean needsLightRefresh;
 	public int[] recentSize;
 	public int[] mousePos;
+	public GameUI ui;
 	public Game() {
 		level = new Level(this, SubdivisionLevelGeneration.generateLevel());
 		particles = new ArrayList<Particle>();
 		needsLightRefresh = new AtomicBoolean(true);
 		mousePos = new int[] { 100, 100 };
+		ui = new GameUI(this);
 		// Spawn a player
 		player = spawn(Player::new);
 		turn = player;
@@ -52,6 +54,7 @@ public class Game {
 		return freshEntity.get();
 	}
 	public void tick() {
+		// Get new action from entity
 		if (! canContinue) {
 			/**
 			 * If true, indicates that the current entity's action has completed immediately,
@@ -66,9 +69,10 @@ public class Game {
 				canFastSwitch = getAndInitiateActionFromCurrentEntity();
 			}
 		}
+		// Tick the world
 		tickAllEntities();
 		goToNextEntityIfPossible();
-		tickAllParticles();
+		tickParticlesAndItems();
 	}
 	public boolean getAndInitiateActionFromCurrentEntity() {
 		AtomicBoolean canFastSwitch = new AtomicBoolean();
@@ -118,7 +122,7 @@ public class Game {
 		}
 		return false;
 	}
-	public void tickAllParticles() {
+	public void tickParticlesAndItems() {
 		for (int i = 0; i < particles.size(); i++) {
 			Particle p = particles.get(i);
 			boolean canBeRemoved = p.tick();
@@ -126,6 +130,10 @@ public class Game {
 				particles.remove(p);
 				i -= 1;
 			}
+		}
+		for (int i = 0; i < level.items.size(); i++) {
+			DroppedItem m = level.items.get(i);
+			m.tick();
 		}
 	}
 	public Entity getNextEntity() {
@@ -165,7 +173,7 @@ public class Game {
 		// Render the world
 		int[] cameraPos = getCameraPos(width, height);
 		s.blit(renderWorld(), -cameraPos[0], -cameraPos[1]);
-		// Draw the mouse data
+		// Draw the debug data
 		int mouseX = (int)((double)(mousePos[0] + cameraPos[0]) / Tile.TILE_SIZE);
 		int mouseY = (int)((double)(mousePos[1] + cameraPos[1]) / Tile.TILE_SIZE);
 		String text = "X: " + mouseX + " Y: " + mouseY;
@@ -194,6 +202,8 @@ public class Game {
 			text += "\n\nItem\nName: " + m.item.getName();
 		}
 		s.blit(Surface.renderMultilineText(15, text, Color.RED), 0, 0);
+		// Add UI
+		s.blit(ui.render(width, height), 0, 0);
 		// Return
 		return s;
 	}
@@ -231,13 +241,12 @@ public class Game {
 		return time + 1;
 	}
 	public void click(int x, int y) {
-		if (this.turn instanceof Player turnPlayer) {
-			int[] camera = getCameraPos(recentSize[0], recentSize[1]);
-			int pixelXWithCamera = x + camera[0];
-			int pixelYWithCamera = y + camera[1];
-			int worldX = pixelXWithCamera / Tile.TILE_SIZE;
-			int worldY = pixelYWithCamera / Tile.TILE_SIZE;
-			turnPlayer.click(worldX, worldY);
-		}
+		if (ui.click(x, y)) return;
+		int[] camera = getCameraPos(recentSize[0], recentSize[1]);
+		int pixelXWithCamera = x + camera[0];
+		int pixelYWithCamera = y + camera[1];
+		int worldX = pixelXWithCamera / Tile.TILE_SIZE;
+		int worldY = pixelYWithCamera / Tile.TILE_SIZE;
+		player.click(worldX, worldY);
 	}
 }

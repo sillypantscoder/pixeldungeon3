@@ -9,6 +9,7 @@ import com.sillypantscoder.pixeldungeon3.entity.PathfindTarget;
 import com.sillypantscoder.pixeldungeon3.entity.Spritesheet;
 import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
 import com.sillypantscoder.pixeldungeon3.item.Item;
+import com.sillypantscoder.pixeldungeon3.item.type.FoodRation;
 import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.LinePoints;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
@@ -20,6 +21,7 @@ public class Player extends Entity {
 		super(game, x, y);
 		target = null;
 		inventory = new ArrayList<Item>();
+		inventory.add(new FoodRation());
 	}
 	public void requestAction() {
 		this.actor.animate("idle");
@@ -67,10 +69,10 @@ public class Player extends Entity {
 		return Spritesheet.read("player");
 	}
 	public int getMaxHealth() {
-		return 10;
+		return 1000;
 	}
 	public int getDamage() {
-		return 3;
+		return 300;
 	}
 	public void click(int worldX, int worldY) {
 		if (target != null) {
