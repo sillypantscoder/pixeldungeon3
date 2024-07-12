@@ -10,6 +10,8 @@ import com.sillypantscoder.pixeldungeon3.entity.Spritesheet;
 import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
 import com.sillypantscoder.pixeldungeon3.item.Item;
 import com.sillypantscoder.pixeldungeon3.item.type.FoodRation;
+import com.sillypantscoder.pixeldungeon3.item.type.Knuckleduster;
+import com.sillypantscoder.pixeldungeon3.item.type.Weapon;
 import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.LinePoints;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
@@ -19,16 +21,25 @@ import com.sillypantscoder.pixeldungeon3.level.Tile;
  * Most game elements (such as enemy pathfinding) work with multiple players, however the Game class contains a separate field for the main player.
  */
 public class Player extends Entity {
+	public Action pendingAction;
 	public PathfindTarget target;
 	public ArrayList<Item> inventory;
+	public Weapon weaponSlot;
+	// TODO: Player healing (once every 10 turns)
 	public Player(Game game, int x, int y) {
 		super(game, x, y);
 		target = null;
 		inventory = new ArrayList<Item>();
 		inventory.add(new FoodRation());
+		this.weaponSlot = new Knuckleduster();
 	}
 	public void requestAction() {
 		this.actor.animate("idle");
+		if (this.pendingAction != null) {
+			this.setAction(pendingAction);
+			this.pendingAction = null;
+			return;
+		}
 		if (this.target != null) {
 			if (this.target instanceof Entity targetEntity) {
 				// Attack entity if close enough
@@ -73,10 +84,10 @@ public class Player extends Entity {
 		return Spritesheet.read("player");
 	}
 	public int getMaxHealth() {
-		return 1000;
+		return 20;
 	}
 	public int getDamage() {
-		return 300;
+		return this.weaponSlot == null ? 1 : this.weaponSlot.getDamage();
 	}
 	public void click(int worldX, int worldY) {
 		if (target != null) {

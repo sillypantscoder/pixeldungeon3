@@ -11,6 +11,7 @@ import com.sillypantscoder.pixeldungeon3.entity.type.Player;
 import com.sillypantscoder.pixeldungeon3.entity.type.Rat;
 import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
 import com.sillypantscoder.pixeldungeon3.item.Item;
+import com.sillypantscoder.pixeldungeon3.item.type.Sword;
 import com.sillypantscoder.pixeldungeon3.level.Level;
 import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.SubdivisionLevelGeneration;
@@ -51,6 +52,8 @@ public class Game {
 		turn = player;
 		// Spawn some rats
 		for (int i = 0; i < 50; i++) spawn(Rat::new);
+		// Drop a sword somewhere!
+		drop(new Sword());
 	}
 	/**
 	 * Spawn the specified entity.
@@ -172,6 +175,10 @@ public class Game {
 	 */
 	public void drop(Item item, int x, int y) {
 		this.level.items.add(new DroppedItem(level, item, x, y));
+	}
+	public void drop(Item item) {
+		int[] spawn = level.getSpawnLocation();
+		drop(item, spawn[0], spawn[1]);
 	}
 	public int[] getCameraPos(int width, int height) {
 		double tileWidth = width / (double)(Tile.TILE_SIZE);

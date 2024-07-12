@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.IOException;
 
 import com.sillypantscoder.pixeldungeon3.item.Item;
+import com.sillypantscoder.pixeldungeon3.item.type.Weapon;
 import com.sillypantscoder.pixeldungeon3.ui.AbsCombine;
 import com.sillypantscoder.pixeldungeon3.ui.AlignedElement;
 import com.sillypantscoder.pixeldungeon3.ui.ChromeBorder;
@@ -52,7 +53,8 @@ public class GameUI {
 	public UIElement makeBackpackUI() {
 		UIElement dialog = new VCombine(new UIElement[] {
 			new TextElement("Inventory", 6, Color.WHITE),
-			InventoryItemElement.fromInventory(game.player.inventory)
+			new InventoryItemElement(game.player.weaponSlot),
+			InventoryItemElement.fromInventory(game.player)
 		});
 		return new AbsCombine(new UIElement[] {
 			makeGameUI(),
@@ -60,14 +62,17 @@ public class GameUI {
 		}, true);
 	}
 	public UIElement makeBackpackItemUI(Item item) {
-		// Buttons
-		Item.Button[] btns = item.getButtons();
-		UIElement[] buttons = new UIElement[btns.length];
-		for (int i = 0; i < btns.length; i++) {
+		// Get button list
+		Item.Button[] _buttons = item.getButtons();
+		if (item instanceof Weapon w) _buttons = w.getButtons(game.player.weaponSlot == w);
+		final Item.Button[] buttons = _buttons;
+		// Render buttons
+		UIElement[] buttonElms = new UIElement[buttons.length];
+		for (int i = 0; i < buttons.length; i++) {
 			final int index = i;
-			TextElement txt = new TextElement(btns[index].getName(), 6, Color.WHITE);
-			DataContainer<Runnable> container = new DataContainer<Runnable>(txt, () -> btns[index].execute(game, game.player, item));
-			buttons[index] = new ChromeBorder(58, 0, 2, container);
+			TextElement txt = new TextElement(buttons[index].getName(), 6, Color.WHITE);
+			DataContainer<Runnable> container = new DataContainer<Runnable>(txt, () -> buttons[index].execute(game, game.player, item));
+			buttonElms[index] = new ChromeBorder(58, 0, 2, container);
 		}
 		// Make dialog element
 		UIElement dialog = new VCombine(new UIElement[] {
@@ -82,7 +87,7 @@ public class GameUI {
 			new TextElement(item.getDescription(), 5, Color.WHITE),
 			new Spacer(1, 3),
 			// buttons
-			new HzCombine(buttons)
+			new HzCombine(buttonElms)
 		});
 		// Combine with previous dialogs
 		return new AbsCombine(new UIElement[] {
@@ -107,8 +112,10 @@ public class GameUI {
 				this.state = UIState.GAME;
 				this.currentUI = makeGameUI();
 			} else if (clicked instanceof InventoryItemElement inv) {
-				this.state = UIState.BACKPACK_ITEM;
-				this.currentUI = makeBackpackItemUI(inv.item);
+				if (inv.item != null) {
+					this.state = UIState.BACKPACK_ITEM;
+					this.currentUI = makeBackpackItemUI(inv.item);
+				}
 			}
 			return true;
 		} else if (this.state == UIState.BACKPACK_ITEM) {

@@ -218,6 +218,18 @@ public class Surface {
 		surfaces.add(renderText(i, line, color));
 		return combineVertically(surfaces, new Color(0, 0, 0, 0));
 	}
+	public static Surface renderMultilineWrappedText(int size, String text, Color color, int maxWidth) {
+		String[] t = text.split("\n");
+		ArrayList<Surface> surfaces = new ArrayList<Surface>();
+		for (int i = 0; i < t.length; i++) {
+			if (t[i].length() == 0) {
+				surfaces.add(new Surface(1, size, new Color(0, 0, 0, 0)));
+				continue;
+			}
+			surfaces.add(renderWrappedText(size, t[i], color, maxWidth));
+		}
+		return combineVertically(surfaces, new Color(0, 0, 0, 0));
+	}
 	public static Surface combineVertically(ArrayList<Surface> surfaces, Color background) {
 		int width = 1;
 		for (int i = 0; i < surfaces.size(); i++) { int w = surfaces.get(i).get_width(); if (w > width) { width = w; } }

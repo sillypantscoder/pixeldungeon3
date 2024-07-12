@@ -89,10 +89,10 @@ public class Rat extends Entity {
 		return Spritesheet.read("rat");
 	}
 	public int getMaxHealth() {
-		return 4;
+		return 8;
 	}
 	public int getDamage() {
-		return 2;
+		return Random.randint(1, 4);
 	}
 	public void draw(Surface s) {
 		super.draw(s);

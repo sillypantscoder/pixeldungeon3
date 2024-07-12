@@ -38,13 +38,7 @@ public abstract class Item {
 	 */
 	public Button[] getButtons() {
 		return new Button[] {
-			new Button() {
-				public String getName() { return "Drop"; }
-				public void execute(Game game, Player player, Item item) {
-					game.drop(item, player.x, player.y);
-					player.inventory.remove(item);
-				}
-			}
+			new Buttons.DropItemButton()
 		};
 	}
 	public static interface Button {
