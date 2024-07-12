@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
+import com.sillypantscoder.pixeldungeon3.entity.LivingEntity;
+import com.sillypantscoder.pixeldungeon3.entity.type.EnemySpawner;
 import com.sillypantscoder.pixeldungeon3.entity.type.Player;
 import com.sillypantscoder.pixeldungeon3.entity.type.Rat;
 import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
@@ -43,15 +46,16 @@ public class Game {
 	public GameUI ui;
 	public Game() {
 		level = new Level(this, SubdivisionLevelGeneration.generateLevel());
+		spawn(EnemySpawner::new);
 		particles = new ArrayList<Particle>();
 		needsLightRefresh = new AtomicBoolean(true);
 		mousePos = new int[] { 100, 100 };
 		ui = new GameUI(this);
 		// Spawn a player
-		player = spawn(Player::new);
+		player = spawnPos(Player::new);
 		turn = player;
 		// Spawn some rats
-		for (int i = 0; i < 30; i++) spawn(Rat::new);
+		for (int i = 0; i < 30; i++) spawnPos(Rat::new);
 		// Drop a sword somewhere!
 		drop(new Sword());
 	}
@@ -59,12 +63,17 @@ public class Game {
 	 * Spawn the specified entity.
 	 * Usage: `spawn(EntityName::new)`
 	 */
-	public<T extends Entity> T spawn(Entity.EntityCreator<T> creator) {
+	public<T extends LivingEntity> T spawnPos(LivingEntity.EntityCreator<T> creator) {
 		int[] spawn = level.getSpawnLocation();
-		return spawn(creator, spawn[0], spawn[1]);
+		return spawnPos(creator, spawn[0], spawn[1]);
 	}
-	public<T extends Entity> T spawn(Entity.EntityCreator<T> creator, int x, int y) {
+	public<T extends LivingEntity> T spawnPos(LivingEntity.EntityCreator<T> creator, int x, int y) {
 		AtomicReference<T> freshEntity = new AtomicReference<T>(creator.create(this, x, y));
+		level.entities.add(freshEntity.get());
+		return freshEntity.get();
+	}
+	public<T extends Entity> T spawn(Function<Game, T> creator) {
+		AtomicReference<T> freshEntity = new AtomicReference<T>(creator.apply(this));
 		level.entities.add(freshEntity.get());
 		return freshEntity.get();
 	}
@@ -129,15 +138,17 @@ public class Game {
 				level.entities.get(i).action = Optional.empty();
 			}
 			// 2c. Tick the actor
-			level.entities.get(i).actor.tick();
+			if (level.entities.get(i) instanceof LivingEntity l) {
+				l.actor.tick();
+			}
 		}
 	}
 	public boolean goToNextEntityIfPossible() {
 		if (canContinue) {
-			// 3b. Make sure the new entity does not have an action at all
 			Entity next = getNextEntity();
+			// Make sure the new entity does not have an action at all
 			if (! next.action.isPresent()) {
-				// 3c. Switch!
+				// Switch!
 				turn = next;
 				canContinue = false;
 				return true;
@@ -216,7 +227,10 @@ public class Game {
 			}
 			Entity e = level.getEntity(mouseX, mouseY);
 			if (e != null) {
-				text += "\n\nEntity\nHealth: " + e.health + "/" + e.maxHealth;
+				text += "\n\nEntity";
+				if (e instanceof LivingEntity l) {
+					text += "\nHealth: " + l.health + "/" + l.maxHealth;
+				}
 				if (e instanceof Rat rat) {
 					text += "\nStatus: " + rat.state.name();
 				}
@@ -253,8 +267,10 @@ public class Game {
 		// 3. Draw the entities
 		for (int i = 0; i < level.entities.size(); i++) {
 			Entity e = level.entities.get(i);
-			if (e.getTile().lightStatus == LightStatus.Current) {
-				level.entities.get(i).draw(s);
+			if (e instanceof LivingEntity l) {
+				if (l.getTile().lightStatus == LightStatus.Current) {
+					l.draw(s);
+				}
 			}
 		}
 		// 4. Draw the particles

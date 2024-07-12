@@ -9,13 +9,13 @@ import com.sillypantscoder.pixeldungeon3.utils.Utils;
 /**
  * Represents an action that an entity can do during its turn.
  */
-public abstract class Action {
-	public Entity target;
+public abstract class Action<T extends Entity> {
+	public T target;
 	/**
 	 * The number of ticks this action has been active.
 	 */
 	public int ticks;
-	public Action(Entity target) {
+	public Action(T target) {
 		this.target = target;
 		ticks = 0;
 	}
@@ -40,14 +40,14 @@ public abstract class Action {
 	/**
 	 * The entity sleeps for 10 time.
 	 */
-	public static class SleepAction extends Action {
+	public static class SleepAction extends Action<Entity> {
 		public SleepAction(Entity target) {
 			super(target);
 		}
 		public void initiate() {
 			target.time += 10;
 			target.game.canContinue = true;
-			target.actor.animate("idle");
+			if (target instanceof LivingEntity l) l.actor.animate("idle");
 		}
 		public void onTick() {
 		}
@@ -58,13 +58,13 @@ public abstract class Action {
 	/**
 	 * The entity moves to a new location (usually an adjacent space).
 	 */
-	public static class MoveAction extends Action {
+	public static class MoveAction extends Action<LivingEntity> {
 		public double oldX;
 		public double oldY;
 		public int newX;
 		public int newY;
 		public int maxTime;
-		public MoveAction(Entity target, int newX, int newY) {
+		public MoveAction(LivingEntity target, int newX, int newY) {
 			super(target);
 			this.newX = newX;
 			this.newY = newY;
@@ -72,7 +72,7 @@ public abstract class Action {
 		/**
 		 * Create a MoveAction from a delta amount, rather than an absolute target location.
 		 */
-		public static MoveAction createFromDelta(Entity target, int deltaX, int deltaY) {
+		public static MoveAction createFromDelta(LivingEntity target, int deltaX, int deltaY) {
 			return new MoveAction(target, deltaX + target.x, deltaY + target.y);
 		}
 		/**
@@ -116,14 +116,14 @@ public abstract class Action {
 	/**
 	 * The entity attacks another entity.
 	 */
-	public static class AttackAction extends Action {
+	public static class AttackAction extends Action<LivingEntity> {
 		/**
 		 * The entity that is being attacked.
 		 * (The normal `target` parameter indicates the attacker.)
 		 */
-		public Entity attackTarget;
+		public LivingEntity attackTarget;
 		public int maxTime;
-		public AttackAction(Entity attacker, Entity attackTarget) {
+		public AttackAction(LivingEntity attacker, LivingEntity attackTarget) {
 			super(attacker);
 			this.attackTarget = attackTarget;
 		}
@@ -150,18 +150,16 @@ public abstract class Action {
 	/**
 	 * The player picks up an item.
 	 */
-	public static class PickupAction extends Action {
+	public static class PickupAction extends Action<Player> {
 		public DroppedItem item;
-		public Player targetPlayer;
 		public int maxTime;
 		public PickupAction(Player target, DroppedItem item) {
 			super(target);
-			this.targetPlayer = target;
 			this.item = item;
 		}
 		public void initiate() {
 			target.time += 10;
-			targetPlayer.inventory.add(item.item);
+			target.inventory.add(item.item);
 			item.remove();
 			target.game.canContinue = true;
 			// Animation:

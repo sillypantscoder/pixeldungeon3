@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.entity.Action;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
+import com.sillypantscoder.pixeldungeon3.entity.LivingEntity;
 import com.sillypantscoder.pixeldungeon3.entity.PathfindTarget;
 import com.sillypantscoder.pixeldungeon3.entity.Spritesheet;
 import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
@@ -20,12 +21,11 @@ import com.sillypantscoder.pixeldungeon3.level.Tile;
  * Represents the player.
  * Most game elements (such as enemy pathfinding) work with multiple players, however the Game class contains a separate field for the main player.
  */
-public class Player extends Entity {
-	public Action pendingAction;
+public class Player extends LivingEntity {
+	public Action<Player> pendingAction;
 	public PathfindTarget target;
 	public ArrayList<Item> inventory;
 	public Weapon weaponSlot;
-	// TODO: Player healing (once every 10 turns)
 	public Player(Game game, int x, int y) {
 		super(game, x, y);
 		target = null;
@@ -41,7 +41,7 @@ public class Player extends Entity {
 			return;
 		}
 		if (this.target != null) {
-			if (this.target instanceof Entity targetEntity) {
+			if (this.target instanceof LivingEntity targetEntity) {
 				// Attack entity if close enough
 				if (Math.abs(this.x - targetEntity.x) <= 1 && Math.abs(this.y - targetEntity.y) <= 1) {
 					this.setAction(new Action.AttackAction(this, targetEntity));
@@ -98,9 +98,11 @@ public class Player extends Entity {
 		// Move to entity
 		for (int i = 0; i < game.level.entities.size(); i++) {
 			Entity e = game.level.entities.get(i);
-			if (e.x == worldX && e.y == worldY && e != this) {
-				target = e;
-				return;
+			if (e instanceof LivingEntity l) {
+				if (l.x == worldX && l.y == worldY && l != this) {
+					target = l;
+					return;
+				}
 			}
 		}
 		// Move to item

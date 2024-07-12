@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.Random;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
+import com.sillypantscoder.pixeldungeon3.entity.LivingEntity;
 import com.sillypantscoder.pixeldungeon3.entity.type.Player;
 import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
 import com.sillypantscoder.pixeldungeon3.utils.Pathfinding;
@@ -117,11 +118,13 @@ public class Level {
 		if (outOfBounds(x, y)) return null;
 		return board[x][y];
 	}
-	public Entity getEntity(int x, int y) {
+	public LivingEntity getEntity(int x, int y) {
 		for (int i = 0; i < this.entities.size(); i++) {
 			Entity e = this.entities.get(i);
-			if (e.x == x && e.y == y) {
-				return e;
+			if (e instanceof LivingEntity l) {
+				if (l.x == x && l.y == y) {
+					return l;
+				}
 			}
 		}
 		return null;

@@ -12,19 +12,17 @@ public class Buttons {
 		public void execute(Game game, Player player, Item item) {
 			player.pendingAction = new DropItemAction(player, item);
 		}
-		public static class DropItemAction extends Action {
-			public Player targetPlayer;
+		public static class DropItemAction extends Action<Player> {
 			public Item item;
 			public DropItemAction(Player target, Item item) {
 				super(target);
-				this.targetPlayer = target;
 				this.item = item;
 			}
 			public void initiate() {
-				targetPlayer.time += 5;
-				targetPlayer.inventory.remove(item);
-				targetPlayer.game.drop(item, targetPlayer.x, targetPlayer.y);
-				targetPlayer.game.canContinue = true;
+				target.time += 5;
+				target.inventory.remove(item);
+				target.game.drop(item, target.x, target.y);
+				target.game.canContinue = true;
 			}
 			public void onTick() {
 			}
@@ -40,20 +38,18 @@ public class Buttons {
 				player.pendingAction = new WeaponEquipAction(player, w);
 			}
 		}
-		public static class WeaponEquipAction extends Action {
-			public Player targetPlayer;
+		public static class WeaponEquipAction extends Action<Player> {
 			public Weapon item;
 			public WeaponEquipAction(Player target, Weapon item) {
 				super(target);
-				this.targetPlayer = target;
 				this.item = item;
 			}
 			public void initiate() {
-				if (targetPlayer.weaponSlot == null) {
-					targetPlayer.time += 5;
-					targetPlayer.inventory.remove(item);
-					targetPlayer.weaponSlot = item;
-					targetPlayer.game.canContinue = true;
+				if (target.weaponSlot == null) {
+					target.time += 5;
+					target.inventory.remove(item);
+					target.weaponSlot = item;
+					target.game.canContinue = true;
 				}
 			}
 			public void onTick() {
@@ -68,17 +64,15 @@ public class Buttons {
 		public void execute(Game game, Player player, Item item) {
 			player.pendingAction = new WeaponUnEquipAction(player);
 		}
-		public static class WeaponUnEquipAction extends Action {
-			public Player targetPlayer;
+		public static class WeaponUnEquipAction extends Action<Player> {
 			public WeaponUnEquipAction(Player target) {
 				super(target);
-				this.targetPlayer = target;
 			}
 			public void initiate() {
-				targetPlayer.time += 5;
-				targetPlayer.inventory.add(targetPlayer.weaponSlot);
-				targetPlayer.weaponSlot = null;
-				targetPlayer.game.canContinue = true;
+				target.time += 5;
+				target.inventory.add(target.weaponSlot);
+				target.weaponSlot = null;
+				target.game.canContinue = true;
 			}
 			public void onTick() {
 			}
@@ -92,19 +86,17 @@ public class Buttons {
 		public void execute(Game game, Player player, Item item) {
 			player.pendingAction = new FoodEatAction(player, item);
 		}
-		public static class FoodEatAction extends Action {
-			public Player targetPlayer;
+		public static class FoodEatAction extends Action<Player> {
 			public Item item;
 			public FoodEatAction(Player target, Item item) {
 				super(target);
-				this.targetPlayer = target;
 				this.item = item;
 			}
 			public void initiate() {
-				targetPlayer.time += 25;
-				targetPlayer.inventory.remove(item);
-				targetPlayer.health += 4;
-				targetPlayer.game.canContinue = true;
+				target.time += 25;
+				target.inventory.remove(item);
+				target.health += 4;
+				target.game.canContinue = true;
 			}
 			public void onTick() {
 			}

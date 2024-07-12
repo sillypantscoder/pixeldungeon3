@@ -6,7 +6,7 @@ import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.Random;
 import com.sillypantscoder.pixeldungeon3.entity.Action;
 import com.sillypantscoder.pixeldungeon3.entity.EnemyState;
-import com.sillypantscoder.pixeldungeon3.entity.Entity;
+import com.sillypantscoder.pixeldungeon3.entity.LivingEntity;
 import com.sillypantscoder.pixeldungeon3.entity.Spritesheet;
 import com.sillypantscoder.pixeldungeon3.item.type.FoodRation;
 import com.sillypantscoder.pixeldungeon3.level.LightStatus;
@@ -16,7 +16,7 @@ import com.sillypantscoder.window.Surface;
 /**
  * An enemy. Currently the rat is the only type of enemy.
  */
-public class Rat extends Entity {
+public class Rat extends LivingEntity {
 	public EnemyState state;
 	public Player target;
 	public Rat(Game game, int x, int y) {

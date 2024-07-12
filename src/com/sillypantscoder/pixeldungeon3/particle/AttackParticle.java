@@ -3,7 +3,7 @@ package com.sillypantscoder.pixeldungeon3.particle;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import com.sillypantscoder.pixeldungeon3.entity.Entity;
+import com.sillypantscoder.pixeldungeon3.entity.LivingEntity;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.pixeldungeon3.utils.Utils;
 import com.sillypantscoder.window.Surface;
@@ -26,7 +26,7 @@ public class AttackParticle extends Particle {
 		vx = (direction[0] * 0.1) + ((Math.random() - 0.5) * 0.15);
 		vy = (direction[1] * 0.1) + ((Math.random() - 0.5) * 0.15);
 	}
-	public static ArrayList<AttackParticle> createCluster(Entity attacker, Entity attackTarget) {
+	public static ArrayList<AttackParticle> createCluster(LivingEntity attacker, LivingEntity attackTarget) {
 		ArrayList<AttackParticle> list = new ArrayList<AttackParticle>();
 		for (int i = 0; i < 10; i++) {
 			list.add(new AttackParticle(attackTarget.x, attackTarget.y, attackTarget.x - attacker.x, attackTarget.y - attacker.y));

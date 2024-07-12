@@ -1,7 +1,7 @@
 package com.sillypantscoder.pixeldungeon3.particle;
 
 import com.sillypantscoder.pixeldungeon3.entity.Actor;
-import com.sillypantscoder.pixeldungeon3.entity.Entity;
+import com.sillypantscoder.pixeldungeon3.entity.LivingEntity;
 import com.sillypantscoder.window.Surface;
 
 /**
@@ -11,7 +11,7 @@ import com.sillypantscoder.window.Surface;
 public class DeathParticle extends Particle {
 	public Actor actor;
 	public int maxTicks;
-	public DeathParticle(Entity target) {
+	public DeathParticle(LivingEntity target) {
 		super(target.x, target.y);
 		this.actor = target.actor;
 		this.actor.animate("death");
