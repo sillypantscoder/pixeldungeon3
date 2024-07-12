@@ -2,9 +2,18 @@ package com.sillypantscoder.pixeldungeon3;
 
 import java.awt.Color;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import com.sillypantscoder.pixeldungeon3.item.Item;
+import com.sillypantscoder.pixeldungeon3.ui.AbsCombine;
+import com.sillypantscoder.pixeldungeon3.ui.AlignedElement;
+import com.sillypantscoder.pixeldungeon3.ui.DataContainer;
+import com.sillypantscoder.pixeldungeon3.ui.HzCombine;
+import com.sillypantscoder.pixeldungeon3.ui.InventoryItemElement;
+import com.sillypantscoder.pixeldungeon3.ui.Spacer;
+import com.sillypantscoder.pixeldungeon3.ui.TextElement;
+import com.sillypantscoder.pixeldungeon3.ui.ImageDisplay;
+import com.sillypantscoder.pixeldungeon3.ui.UIElement;
+import com.sillypantscoder.pixeldungeon3.ui.VCombine;
 import com.sillypantscoder.pixeldungeon3.utils.TextureLoader;
 import com.sillypantscoder.window.Surface;
 
@@ -15,76 +24,91 @@ public class GameUI {
 	// Game
 	public Game game;
 	public UIState state;
+	public UIElement currentUI;
 	public GameUI(Game game) {
 		this.game = game;
 		this.state = UIState.GAME;
 		try {
 			Surface toolbar = TextureLoader.loadAsset("toolbar.png");
 			button_backpack = toolbar.crop(61, 8, 21, 23);
-			button_backpack = button_backpack.scale_size(UI_SCALE);
 		} catch (IOException e) {
 			System.out.println("UI failed to load texture");
 			e.printStackTrace();
 		}
+		this.currentUI = makeGameUI();
+	}
+	public UIElement makeGameUI() {
+		return new AlignedElement(new ImageDisplay(button_backpack), 1, 1);
+	}
+	public UIElement makeBackpackUI() {
+		return new AbsCombine(new UIElement[] {
+			makeGameUI(),
+			new AlignedElement(new HzCombine(InventoryItemElement.fromInventory(game.player.inventory), Color.GRAY.darker()), 0, 0)
+		}, true);
+	}
+	public UIElement makeBackpackItemUI(Item item) {
+		// Buttons
+		Item.Button[] btns = item.getButtons();
+		UIElement[] buttons = new UIElement[btns.length];
+		for (int i = 0; i < btns.length; i++) {
+			final int index = i;
+			TextElement txt = new TextElement(btns[index].getName(), 6, Color.WHITE);
+			buttons[index] = new DataContainer<Runnable>(txt, () -> btns[index].execute(game, item));
+		}
+		// Make dialog element
+		UIElement dialog = new VCombine(new UIElement[] {
+			new HzCombine(new UIElement[] {
+				// icon and name
+				new ImageDisplay(item.image),
+				new Spacer(5, 1),
+				new TextElement(item.getName(), 8, Color.WHITE)
+			}, Color.GRAY.darker()),
+			// buttons
+			new HzCombine(buttons, Color.GRAY.darker())
+		}, Color.GRAY.darker());
+		// Combine with previous dialogs
+		return new AbsCombine(new UIElement[] {
+			makeBackpackUI(),
+			new AlignedElement(dialog, 0, 0)
+		}, true);
 	}
 	public Surface render(int width, int height) {
-		Surface result = new Surface(width, height, new Color(0, 0, 0, 0));
-		// Bottom right: Draw inventory buttons
-		result.blit(button_backpack, result.get_width() - button_backpack.get_width(), result.get_height() - button_backpack.get_height());
-		if (this.state == UIState.BACKPACK) {
-			// Draw backpack
-			Surface backpack = drawBackpack(width);
-			result.blit(backpack, (result.get_width() / 2) - (backpack.get_width() / 2), (result.get_height() / 2) - (backpack.get_height() / 2));
-		}
-		// Finish
-		return result;
-	}
-	public Surface drawBackpack(int maxWidth) {
-		ArrayList<Item> inv = game.player.inventory;
-		int padding = 4;
-		int cellsize = (30 * UI_SCALE);
-		int pcellsize = cellsize + (padding * 2);
-		int cols = maxWidth / pcellsize;
-		int rows = Math.ceilDiv(inv.size(), cols);
-		Surface s = new Surface(cols * pcellsize, rows * pcellsize, Color.GRAY.darker());
-		int i = 0;
-		for (int y = 0; y < rows; y++) {
-			for (int x = 0; x < cols; x++) {
-				// Draw square
-				int drawX = (x * pcellsize) + padding;
-				int drawY = (y * pcellsize) + padding;
-				s.drawRect(Color.GRAY, drawX, drawY, cellsize, cellsize);
-				// Draw item
-				if (i < inv.size()) {
-					Surface item = inv.get(i).image.scale_size(UI_SCALE);
-					int itemCellX = (cellsize / 2) - (item.get_width() / 2);
-					int itemCellY = (cellsize / 2) - (item.get_height() / 2);
-					s.blit(item, drawX + itemCellX, drawY + itemCellY);
-				}
-				// Increment
-				i += 1;
-			}
-		}
-		return s;
+		return this.currentUI.render(width, height);
 	}
 	public boolean click(int xLeft, int yTop) {
-		int xRight = game.recentSize[0] - xLeft;
-		int yBottom = game.recentSize[1] - yTop;
-		if (state == UIState.GAME) {
-			// Bottom right: Inventory buttons
-			if (xRight <= button_backpack.get_width() && yBottom <= button_backpack.get_height()) {
-				state = UIState.BACKPACK;
-				return true;
+		UIElement clicked = this.currentUI.elementAtPoint(game.recentSize[0], game.recentSize[1], xLeft, yTop);
+		// Find what button was pressed
+		if (this.state == UIState.GAME) {
+			// Only button available is the backpack button
+			if (clicked == null) return false;
+			this.state = UIState.BACKPACK;
+			this.currentUI = makeBackpackUI();
+		} else if (this.state == UIState.BACKPACK) {
+			// Was an item clicked?
+			if (clicked == null) {
+				this.state = UIState.GAME;
+				this.currentUI = makeGameUI();
+			} else if (clicked instanceof InventoryItemElement inv) {
+				this.state = UIState.BACKPACK_ITEM;
+				this.currentUI = makeBackpackItemUI(inv.item);
 			}
-		} else if (state == UIState.BACKPACK) {
-			state = UIState.GAME;
 			return true;
+		} else if (this.state == UIState.BACKPACK_ITEM) {
+			// Was a button clicked?
+			if (clicked == null) {
+				this.state = UIState.BACKPACK;
+				this.currentUI = makeBackpackUI();
+			} else if (clicked instanceof DataContainer container && container.data instanceof Runnable button) {
+				button.run();
+				this.state = UIState.GAME;
+				this.currentUI = makeGameUI();
+			}
 		}
-		// No buttons
 		return false;
 	}
 	public static enum UIState {
 		GAME,
-		BACKPACK
+		BACKPACK,
+		BACKPACK_ITEM
 	}
 }
