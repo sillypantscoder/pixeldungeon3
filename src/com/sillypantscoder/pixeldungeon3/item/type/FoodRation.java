@@ -13,4 +13,7 @@ public class FoodRation extends Item {
 	public String getName() {
 		return "Ration of food";
 	}
+	public String getDescription() {
+		return "Nothing fancy here: dried meat, some biscuits - things like that.";
+	}
 }

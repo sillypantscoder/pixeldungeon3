@@ -31,7 +31,7 @@ public abstract class Item {
 	 * Get the name of this item.
 	 */
 	public abstract String getName();
-	// TODO: Item descriptions
+	public abstract String getDescription();
 	/**
 	 * Get the list of buttons that appear when viewing this item in the inventory.
 	 * @return

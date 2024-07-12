@@ -11,17 +11,18 @@ import com.sillypantscoder.window.Surface;
  */
 public class HzCombine extends UIElement {
 	public UIElement[] contents;
-	public Color background;
-	public HzCombine(UIElement[] contents, Color background) {
+	public HzCombine(UIElement[] contents) {
 		this.contents = contents;
-		this.background = background;
 	}
 	public Surface render(int maxWidth, int maxHeight) {
 		ArrayList<Surface> surfaces = new ArrayList<Surface>();
+		int cum_width = 0;
 		for (int i = 0; i < contents.length; i++) {
-			surfaces.add(contents[i].render(maxWidth, maxHeight));
+			Surface surface = contents[i].render(maxWidth - cum_width, maxHeight);
+			surfaces.add(surface);
+			cum_width += surface.get_width();
 		}
-		return Surface.combineHorizontally(surfaces, background);
+		return Surface.combineHorizontally(surfaces, new Color(0, 0, 0, 0));
 	}
 	public UIElement elementAtPoint(int maxWidth, int maxHeight, int x, int y) {
 		int cumWidth = 0;
@@ -45,7 +46,7 @@ public class HzCombine extends UIElement {
 				System.out.println(x + " " + y);
 				return this;
 			} public String toString() { return "number 2"; } }
-		}, Color.WHITE);
+		});
 		System.out.println(z.elementAtPoint(200, 200, 101, 51));
 	}
 }

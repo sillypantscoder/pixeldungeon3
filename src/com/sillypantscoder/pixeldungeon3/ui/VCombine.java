@@ -11,17 +11,18 @@ import com.sillypantscoder.window.Surface;
  */
 public class VCombine extends UIElement {
 	public UIElement[] contents;
-	public Color background;
-	public VCombine(UIElement[] contents, Color background) {
+	public VCombine(UIElement[] contents) {
 		this.contents = contents;
-		this.background = background;
 	}
 	public Surface render(int maxWidth, int maxHeight) {
 		ArrayList<Surface> surfaces = new ArrayList<Surface>();
+		int cum_height = 0;
 		for (int i = 0; i < contents.length; i++) {
-			surfaces.add(contents[i].render(maxWidth, maxHeight));
+			Surface surface = contents[i].render(maxWidth, maxHeight - cum_height);
+			surfaces.add(surface);
+			cum_height += surface.get_height();
 		}
-		return Surface.combineVertically(surfaces, background);
+		return Surface.combineVertically(surfaces, new Color(0, 0, 0, 0));
 	}
 	public UIElement elementAtPoint(int maxWidth, int maxHeight, int x, int y) {
 		int cumHeight = 0;

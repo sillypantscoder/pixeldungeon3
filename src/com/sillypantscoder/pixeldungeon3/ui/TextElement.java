@@ -18,7 +18,7 @@ public class TextElement extends UIElement {
 		this.color = color;
 	}
 	public Surface render(int maxWidth, int maxHeight) {
-		return Surface.renderText(size * GameUI.UI_SCALE, text, color);
+		return Surface.renderWrappedText(size * GameUI.UI_SCALE, text, color, maxWidth);
 	}
 	public UIElement elementAtPoint(int maxWidth, int maxHeight, int x, int y) {
 		return this;

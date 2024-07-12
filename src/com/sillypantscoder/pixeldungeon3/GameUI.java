@@ -50,7 +50,10 @@ public class GameUI {
 		return new AlignedElement(new ImageDisplay(button_backpack), 1, 1);
 	}
 	public UIElement makeBackpackUI() {
-		UIElement dialog = InventoryItemElement.fromInventory(game.player.inventory);
+		UIElement dialog = new VCombine(new UIElement[] {
+			new TextElement("Inventory", 6, Color.WHITE),
+			InventoryItemElement.fromInventory(game.player.inventory)
+		});
 		return new AbsCombine(new UIElement[] {
 			makeGameUI(),
 			new AlignedElement(new ChromeBorder(0, 0, 7, dialog), 0, 0)
@@ -73,10 +76,14 @@ public class GameUI {
 				new ImageDisplay(item.image),
 				new Spacer(5, 1),
 				new TextElement(item.getName(), 8, Color.WHITE)
-			}, new Color(0, 0, 0, 0)),
+			}),
+			// description
+			new Spacer(1, 3),
+			new TextElement(item.getDescription(), 5, Color.WHITE),
+			new Spacer(1, 3),
 			// buttons
-			new HzCombine(buttons, new Color(0, 0, 0, 0))
-		}, new Color(0, 0, 0, 0));
+			new HzCombine(buttons)
+		});
 		// Combine with previous dialogs
 		return new AbsCombine(new UIElement[] {
 			makeBackpackUI(),

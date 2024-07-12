@@ -26,6 +26,11 @@ import java.awt.FontMetrics;
 public class Surface {
 	public BufferedImage img;
 	public Surface(int width, int height, Color color) {
+		if (width == 0 || height == 0) {
+			width = 1;
+			height = 1;
+			color = new Color(0, 0, 0, 0);
+		}
 		img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		this.fill(color);
 	}
@@ -183,6 +188,34 @@ public class Surface {
 			}
 			surfaces.add(renderText(size, t[i], color));
 		}
+		return combineVertically(surfaces, new Color(0, 0, 0, 0));
+	}
+	public static Surface renderWrappedText(int i, String text, Color color, int maxWidth) {
+		// Get font
+		Font font = new Font("Monospaced", 0, i);
+		// Measure the text
+		Surface measure = new Surface(1, 1, Color.BLACK);
+		Graphics2D big = (Graphics2D)(measure.img.getGraphics());
+		big.setFont(font);
+		FontMetrics fm = big.getFontMetrics();
+		// Draw the text
+		ArrayList<Surface> surfaces = new ArrayList<Surface>();
+		String[] words = text.split(" ");
+		String line = "";
+		for (int j = 0; j < words.length; j++) {
+			String word = words[j];
+			if (fm.stringWidth(line + " " + word) > maxWidth) {
+				surfaces.add(renderText(i, line, color));
+				line = word;
+			} else {
+				if (line.length() == 0) {
+					line = word;
+				} else {
+					line += " " + word;
+				}
+			}
+		}
+		surfaces.add(renderText(i, line, color));
 		return combineVertically(surfaces, new Color(0, 0, 0, 0));
 	}
 	public static Surface combineVertically(ArrayList<Surface> surfaces, Color background) {
