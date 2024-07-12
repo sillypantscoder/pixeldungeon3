@@ -18,6 +18,14 @@ import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.pixeldungeon3.particle.Particle;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * An object that holds all the data needed for the game, such as:
+ *  - The level
+ *  - The particles
+ *  - The main player
+ *  - Whose turn it is
+ *  - A reference to the UI
+ */
 public class Game {
 	public Level level;
 	public ArrayList<Particle> particles;
@@ -27,7 +35,6 @@ public class Game {
 	 * Whether the current action is functionally complete and other actions may be run.
 	 */
 	public boolean canContinue;
-	public int timeLeft;
 	public AtomicBoolean needsLightRefresh;
 	public int[] recentSize;
 	public int[] mousePos;
@@ -44,6 +51,10 @@ public class Game {
 		// Spawn some rats
 		for (int i = 0; i < 50; i++) spawn(Rat::new);
 	}
+	/**
+	 * Spawn the specified entity.
+	 * Usage: `spawn(EntityName::new)`
+	 */
 	public<T extends Entity> T spawn(Entity.EntityCreator<T> creator) {
 		int[] spawn = level.getSpawnLocation();
 		return spawn(creator, spawn[0], spawn[1]);
@@ -53,6 +64,10 @@ public class Game {
 		level.entities.add(freshEntity.get());
 		return freshEntity.get();
 	}
+	/**
+	 * Run one tick.
+	 * Due to fast ticking, this can go through up to 100 turn changes.
+	 */
 	public void tick() {
 		// Get new action from entity
 		if (! canContinue) {
@@ -74,6 +89,10 @@ public class Game {
 		goToNextEntityIfPossible();
 		tickParticlesAndItems();
 	}
+	/**
+	 * Request (and initiate) an action from the current entity.
+	 * @return true if the action completed immediately.
+	 */
 	public boolean getAndInitiateActionFromCurrentEntity() {
 		AtomicBoolean canFastSwitch = new AtomicBoolean();
 		// If we already have an action, we don't need to get a new one
@@ -147,6 +166,9 @@ public class Game {
 		}
 		return nextEntity;
 	}
+	/**
+	 * Create a DroppedItem in the level.
+	 */
 	public void drop(Item item, int x, int y) {
 		this.level.items.add(new DroppedItem(level, item, x, y));
 	}

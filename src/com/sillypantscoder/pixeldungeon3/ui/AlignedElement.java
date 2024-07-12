@@ -2,8 +2,12 @@ package com.sillypantscoder.pixeldungeon3.ui;
 
 import java.awt.Color;
 
+import com.sillypantscoder.pixeldungeon3.utils.Rect;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * Align one element in one of the main 9 locations (with each axis having an option of less, center, or more).
+ */
 public class AlignedElement extends UIElement {
 	public UIElement contents;
 	public int[] align;

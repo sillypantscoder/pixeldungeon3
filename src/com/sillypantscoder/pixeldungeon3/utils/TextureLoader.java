@@ -14,6 +14,9 @@ import com.sillypantscoder.window.Surface;
 import java.awt.image.WritableRaster;
 import java.awt.geom.AffineTransform;
 
+/**
+ * This class builds on top of AssetLoader, letting you read image files from the "src/resources/image" directory into Surfaces.
+ */
 public class TextureLoader {
 	protected static HashMap<String, Surface> cache = new HashMap<String, Surface>();
 	public static Surface loadAsset(String filename) throws IOException {

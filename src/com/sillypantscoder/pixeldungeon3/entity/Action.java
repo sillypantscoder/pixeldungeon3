@@ -6,24 +6,40 @@ import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.pixeldungeon3.particle.AttackParticle;
 import com.sillypantscoder.pixeldungeon3.utils.Utils;
 
+/**
+ * Represents an action that an entity can do during its turn.
+ */
 public abstract class Action {
-	public int ticks;
 	public Entity target;
+	/**
+	 * The number of ticks this action has been active.
+	 */
+	public int ticks;
 	public Action(Entity target) {
-		ticks = 0;
 		this.target = target;
+		ticks = 0;
 	}
 	public void tick() {
 		this.onTick();
 		this.ticks += 1;
 	}
+	/**
+	 * This function will be called once, after the action has been added.
+	 */
 	public abstract void initiate();
+	/**
+	 * This function will be called once per tick.
+	 * Once the action has finished, set `target.game.canContinue` to true to let the game know that it can proceed with the next entity's turn.
+	 */
 	public abstract void onTick();
 	/**
 	 * Return whether this action is totally complete and may be removed.
-	 * @return
 	 */
 	public abstract boolean canBeRemoved();
+	// === PUBLIC ACTIONS ===
+	/**
+	 * The entity sleeps for 10 time.
+	 */
 	public static class SleepAction extends Action {
 		public SleepAction(Entity target) {
 			super(target);
@@ -39,6 +55,9 @@ public abstract class Action {
 			return true;
 		}
 	}
+	/**
+	 * The entity moves to a new location (usually an adjacent space).
+	 */
 	public static class MoveAction extends Action {
 		public double oldX;
 		public double oldY;
@@ -50,9 +69,15 @@ public abstract class Action {
 			this.newX = newX;
 			this.newY = newY;
 		}
+		/**
+		 * Create a MoveAction from a delta amount, rather than an absolute target location.
+		 */
 		public static MoveAction createFromDelta(Entity target, int deltaX, int deltaY) {
 			return new MoveAction(target, deltaX + target.x, deltaY + target.y);
 		}
+		/**
+		 * Check whether it is possible to move to the new location.
+		 */
 		public boolean validTarget() {
 			if (target.game.level.outOfBounds(newX, newY)) return false;
 			Tile targetTile = target.game.level.get_at(newX, newY);
@@ -88,7 +113,14 @@ public abstract class Action {
 			return ticks > maxTime;
 		}
 	}
+	/**
+	 * The entity attacks another entity.
+	 */
 	public static class AttackAction extends Action {
+		/**
+		 * The entity that is being attacked.
+		 * (The normal `target` parameter indicates the attacker.)
+		 */
 		public Entity attackTarget;
 		public int maxTime;
 		public AttackAction(Entity attacker, Entity attackTarget) {
@@ -116,6 +148,9 @@ public abstract class Action {
 			return ticks > maxTime;
 		}
 	}
+	/**
+	 * The player picks up an item.
+	 */
 	public static class PickupAction extends Action {
 		public DroppedItem item;
 		public Player targetPlayer;

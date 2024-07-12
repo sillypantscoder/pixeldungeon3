@@ -3,6 +3,10 @@ package com.sillypantscoder.pixeldungeon3.ui;
 import com.sillypantscoder.pixeldungeon3.GameUI;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * Display an image, as an element.
+ * Represents: <img>
+ */
 public class ImageDisplay extends UIElement {
 	public Surface image;
 	public ImageDisplay(Surface image) {

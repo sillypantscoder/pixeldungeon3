@@ -5,6 +5,9 @@ import java.awt.Color;
 import com.sillypantscoder.pixeldungeon3.GameUI;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * An element that functions as a blank spacer.
+ */
 public class Spacer extends UIElement {
 	public int width;
 	public int height;

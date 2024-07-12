@@ -14,6 +14,10 @@ import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.LinePoints;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 
+/**
+ * Represents the player.
+ * Most game elements (such as enemy pathfinding) work with multiple players, however the Game class contains a separate field for the main player.
+ */
 public class Player extends Entity {
 	public PathfindTarget target;
 	public ArrayList<Item> inventory;

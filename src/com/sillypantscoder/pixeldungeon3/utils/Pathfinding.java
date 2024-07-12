@@ -2,6 +2,10 @@ package com.sillypantscoder.pixeldungeon3.utils;
 
 import java.util.ArrayList;
 
+/**
+ * A class that contains the A* pathfinding algorithm.
+ * This is used for enemy AI.
+ */
 public class Pathfinding {
 	public static void main(String[] args) {
 		int[][] path = findPath(new int[][] {

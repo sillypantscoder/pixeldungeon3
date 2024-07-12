@@ -3,8 +3,11 @@ package com.sillypantscoder.pixeldungeon3.level;
 import java.util.ArrayList;
 
 import com.sillypantscoder.pixeldungeon3.Random;
-import com.sillypantscoder.pixeldungeon3.ui.Rect;
+import com.sillypantscoder.pixeldungeon3.utils.Rect;
 
+/**
+ * Generate a level by starting with a large square and subdividing it.
+ */
 public class SubdivisionLevelGeneration {
 	public static void main(String[] args) {
 		TileType[][] board = generateLevel();

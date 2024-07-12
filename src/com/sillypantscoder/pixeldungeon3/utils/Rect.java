@@ -1,7 +1,11 @@
-package com.sillypantscoder.pixeldungeon3.ui;
+package com.sillypantscoder.pixeldungeon3.utils;
 
 import com.sillypantscoder.pixeldungeon3.Random;
 
+/**
+ * An object that represents a rectangle.
+ * This class is used all over the place.
+ */
 public class Rect {
 	public int x, y, w, h;
 	public Rect(int x, int y, int w, int h) {

@@ -5,6 +5,9 @@ import java.awt.event.MouseEvent;
 import com.sillypantscoder.window.Surface;
 import com.sillypantscoder.window.Window;
 
+/**
+ * The main window. Maintains a reference to a game.
+ */
 public class MainWindow extends Window {
 	public Game game;
 	public MainWindow() {

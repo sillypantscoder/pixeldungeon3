@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 
+/**
+ * This class allows you to load resources from the "src/resources" directory.
+ * It will automatically unpack the JAR file if running from a JAR file.
+ */
 public class AssetLoader {
 	public static long runnerID = (long)(Math.random() * 1000000000);
 	/**

@@ -7,6 +7,9 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+/**
+ * This class contains various random utilities used by the rest of the code.
+ */
 public class Utils {
 	public static String readFile(File file) {
 		try {

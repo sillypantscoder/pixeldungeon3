@@ -2,6 +2,10 @@ package com.sillypantscoder.pixeldungeon3.level;
 
 import java.util.ArrayList;
 
+/**
+ * Get all the points that a line passes through.
+ * Used for lighting.
+ */
 public class LinePoints {
 	public static int[][] get_line(int[] start, int[] end) {
 		/* Bresenham's Line Algorithm

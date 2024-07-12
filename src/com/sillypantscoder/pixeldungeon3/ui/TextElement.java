@@ -5,6 +5,9 @@ import java.awt.Color;
 import com.sillypantscoder.pixeldungeon3.GameUI;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * An object that displays some text.
+ */
 public class TextElement extends UIElement {
 	public String text;
 	public int size;

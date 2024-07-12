@@ -7,6 +7,9 @@ import com.sillypantscoder.pixeldungeon3.GameUI;
 import com.sillypantscoder.pixeldungeon3.item.Item;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * An element that displays an item in your inventory.
+ */
 public class InventoryItemElement extends UIElement {
 	public Item item;
 	public InventoryItemElement(Item item) {
@@ -32,6 +35,7 @@ public class InventoryItemElement extends UIElement {
 		for (int i = 0; i < inventory.size(); i++) {
 			elms[i] = new InventoryItemElement(inventory.get(i));
 		}
+		// TODO: Wrap the inventory
 		return elms;
 	}
 }

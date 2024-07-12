@@ -17,13 +17,21 @@ import com.sillypantscoder.pixeldungeon3.ui.VCombine;
 import com.sillypantscoder.pixeldungeon3.utils.TextureLoader;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * This class contains code related to the UI. The UI is drawn on top of the game and can intercept clicks.
+ * This class makes heavy use of the classes in the "ui" folder.
+ */
 public class GameUI {
-	// Images
 	public static final int UI_SCALE = 3;
+	// Button images
 	public Surface button_backpack;
 	// Game
 	public Game game;
 	public UIState state;
+	/**
+	 * The current UI is cached for use in clicking.
+	 * This variable should be populated with the "make____UI()" functions.
+	 */
 	public UIElement currentUI;
 	public GameUI(Game game) {
 		this.game = game;
@@ -53,7 +61,7 @@ public class GameUI {
 		for (int i = 0; i < btns.length; i++) {
 			final int index = i;
 			TextElement txt = new TextElement(btns[index].getName(), 6, Color.WHITE);
-			buttons[index] = new DataContainer<Runnable>(txt, () -> btns[index].execute(game, item));
+			buttons[index] = new DataContainer<Runnable>(txt, () -> btns[index].execute(game, game.player, item));
 		}
 		// Make dialog element
 		UIElement dialog = new VCombine(new UIElement[] {

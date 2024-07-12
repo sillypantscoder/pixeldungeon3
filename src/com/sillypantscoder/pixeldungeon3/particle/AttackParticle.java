@@ -8,6 +8,9 @@ import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.pixeldungeon3.utils.Utils;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * Small "blood" particles that appear when an entity is attacked.
+ */
 public class AttackParticle extends Particle {
 	public double cx;
 	public double cy;

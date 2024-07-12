@@ -5,11 +5,19 @@ import java.io.IOException;
 import com.sillypantscoder.pixeldungeon3.utils.TextureLoader;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * Indicates the state of an enemy.
+ */
 public enum EnemyState {
 	SLEEPING,
 	WAKING_UP,
 	WANDERING,
 	HUNTING;
+	/**
+	 * Draw a small annotation (depending on this value) onto the surface.
+	 * For example, a "z" icon appears above sleeping entities.
+	 * @param s The surface to draw onto.
+	 */
 	public void drawAnnotation(Surface s, int x, int y) {
 		if (this == WANDERING) return;
 		if (this == HUNTING) return;

@@ -5,6 +5,10 @@ import com.sillypantscoder.pixeldungeon3.level.Level;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * An item in the level.
+ * Players can pick up these.
+ */
 public class DroppedItem implements PathfindTarget {
 	public static final int BOUNCE_TICKS = 25;
 	public static final double BOUNCE_HEIGHT = 0.6;
@@ -22,6 +26,9 @@ public class DroppedItem implements PathfindTarget {
 	}
 	public int getX() { return x; }
 	public int getY() { return y; }
+	/**
+	 * Return how much this item has bounced up since its creation.
+	 */
 	public double getYOffset() {
 		return BOUNCE_HEIGHT * Math.sin((this.ticks * Math.PI) / -BOUNCE_TICKS);
 	}

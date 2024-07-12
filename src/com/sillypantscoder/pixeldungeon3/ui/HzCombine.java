@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 import com.sillypantscoder.window.Surface;
 
+/**
+ * Combine a list of elements horizontally.
+ * Represents: this > * { display: inline-block; }
+ */
 public class HzCombine extends UIElement {
 	public UIElement[] contents;
 	public Color background;

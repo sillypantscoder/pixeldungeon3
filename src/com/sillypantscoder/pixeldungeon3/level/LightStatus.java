@@ -2,6 +2,9 @@ package com.sillypantscoder.pixeldungeon3.level;
 
 import java.util.Arrays;
 
+/**
+ * Indicates whether a certain tile is lit up or not.
+ */
 public enum LightStatus {
 	Unknown,
 	Memory,

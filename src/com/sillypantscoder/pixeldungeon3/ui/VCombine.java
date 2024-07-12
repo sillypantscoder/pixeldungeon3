@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 import com.sillypantscoder.window.Surface;
 
+/**
+ * Combine a list of elements vertically.
+ * Represents: this > * { display: block; }
+ */
 public class VCombine extends UIElement {
 	public UIElement[] contents;
 	public Color background;

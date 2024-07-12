@@ -2,8 +2,13 @@ package com.sillypantscoder.pixeldungeon3.ui;
 
 import java.awt.Color;
 
+import com.sillypantscoder.pixeldungeon3.utils.Rect;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * An element which can contain any number of contents, which are all drawn on top of each other.
+ * Represents: this { position: relative; } this > * { position: absolute; top: 0; left: 0; }
+ */
 public class AbsCombine extends UIElement {
 	public UIElement[] contents;
 	public boolean lastOnly;

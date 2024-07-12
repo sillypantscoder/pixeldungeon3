@@ -4,6 +4,10 @@ import com.sillypantscoder.pixeldungeon3.entity.Actor;
 import com.sillypantscoder.pixeldungeon3.entity.Entity;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * A particle that plays the death animation for a specific entity.
+ * This object keeps a reference to the dead entity's actor.
+ */
 public class DeathParticle extends Particle {
 	public Actor actor;
 	public int maxTicks;

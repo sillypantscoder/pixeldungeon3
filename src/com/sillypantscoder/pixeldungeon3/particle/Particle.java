@@ -2,6 +2,9 @@ package com.sillypantscoder.pixeldungeon3.particle;
 
 import com.sillypantscoder.window.Surface;
 
+/**
+ * A particle on the screen.
+ */
 public abstract class Particle {
 	public int x;
 	public int y;

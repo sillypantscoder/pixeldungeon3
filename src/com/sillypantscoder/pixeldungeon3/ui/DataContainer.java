@@ -2,6 +2,10 @@ package com.sillypantscoder.pixeldungeon3.ui;
 
 import com.sillypantscoder.window.Surface;
 
+/**
+ * This element is always recorded as having been clicked, regardless of its contents.
+ * This element can also contain some data, which can be read after the click.
+ */
 public class DataContainer<T> extends UIElement {
 	public T data;
 	public UIElement contents;

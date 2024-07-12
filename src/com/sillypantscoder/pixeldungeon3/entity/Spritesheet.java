@@ -7,6 +7,9 @@ import com.sillypantscoder.pixeldungeon3.utils.TextureLoader;
 import com.sillypantscoder.pixeldungeon3.utils.Utils;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * This object contains data about the sprites. Each animation has a name, a list of surfaces, and a designated "next" animation that should play once the current animation is complete.
+ */
 public class Spritesheet {
 	public HashMap<String, AnimationEntry> entries;
 	public static class AnimationEntry {

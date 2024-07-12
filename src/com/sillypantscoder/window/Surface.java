@@ -19,6 +19,10 @@ import java.util.ArrayList;
 import java.awt.RenderingHints;
 import java.awt.FontMetrics;
 
+/**
+ * This object represents an image. It allows you to do a lot of things with the image.
+ * This entire class was inspired by Pygame! :)
+ */
 public class Surface {
 	public BufferedImage img;
 	public Surface(int width, int height, Color color) {

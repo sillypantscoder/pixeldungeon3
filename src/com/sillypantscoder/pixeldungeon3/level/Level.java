@@ -10,6 +10,11 @@ import com.sillypantscoder.pixeldungeon3.item.DroppedItem;
 import com.sillypantscoder.pixeldungeon3.utils.Pathfinding;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * A level.
+ * This object contains all the "functionality"-related parts of the level,
+ * including the board, list of entities, and dropped items.
+ */
 public class Level {
 	public Tile[][] board;
 	public ArrayList<Entity> entities;
@@ -25,6 +30,9 @@ public class Level {
 		entities = new ArrayList<Entity>();
 		items = new ArrayList<DroppedItem>();
 	}
+	/**
+	 * Generate a blank board of the specified size.
+	 */
 	public static TileType[][] generateBoard(int width, int height) {
 		TileType[][] layout = new TileType[width][height];
 		for (int x = 0; x < layout.length; x++) {

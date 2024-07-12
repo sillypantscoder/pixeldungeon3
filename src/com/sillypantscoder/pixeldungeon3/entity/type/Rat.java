@@ -13,6 +13,9 @@ import com.sillypantscoder.pixeldungeon3.level.LightStatus;
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * An enemy. Currently the rat is the only type of enemy.
+ */
 public class Rat extends Entity {
 	public EnemyState state;
 	public Player target;
@@ -54,6 +57,9 @@ public class Rat extends Entity {
 			} else requestHuntingAction();
 		}
 	}
+	/**
+	 * Pathfind towards the selected player. Then, attack or move accordingly.
+	 */
 	public void requestHuntingAction() {
 		int[][] path = game.level.findPath(this.x, this.y, target.x, target.y, false);
 		if (path.length == 0) {
@@ -69,6 +75,9 @@ public class Rat extends Entity {
 			this.setAction(new Action.MoveAction(this, nextTarget[0], nextTarget[1]));
 		}
 	}
+	/**
+	 * Choose a random player and set it as our target.
+	 */
 	public void findNewTarget() {
 		// Choose a target
 		ArrayList<Player> allPlayers = game.level.getPlayers();

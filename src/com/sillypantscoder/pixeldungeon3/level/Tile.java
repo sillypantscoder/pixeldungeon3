@@ -6,6 +6,10 @@ import com.sillypantscoder.pixeldungeon3.Game;
 import com.sillypantscoder.pixeldungeon3.utils.TextureLoader;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * Represents a tile in the world.
+ * Each tile caches its image so that it's not really slow.
+ */
 public class Tile {
 	public static final int TILE_SIZE = 16;
 	public Game game;

@@ -8,6 +8,10 @@ import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.pixeldungeon3.particle.DeathParticle;
 import com.sillypantscoder.window.Surface;
 
+/**
+ * An entity in the world.
+ * This is the functionality half of the "Entity/Actor" pair.
+ */
 public abstract class Entity implements PathfindTarget {
 	public Game game;
 	public int x;
@@ -32,27 +36,50 @@ public abstract class Entity implements PathfindTarget {
 	public void setAction(Action action) {
 		this.action = Optional.ofNullable(action);
 	}
+	/**
+	 * Request that an action be set for this entity.
+	 */
 	public abstract void requestAction();
 	public abstract Spritesheet getSpritesheet();
 	public abstract int getMaxHealth();
 	public abstract int getDamage();
+	/**
+	 * A function that can be used to create an entity.
+	 */
 	@FunctionalInterface
 	public static interface EntityCreator<T extends Entity> {
 		public T create(Game game, int x, int y);
 	}
+	/**
+	 * Get the tile at this entity's location.
+	 */
 	public Tile getTile() {
 		return game.level.get_at(this.x, this.y);
 	}
+	/**
+	 * Kill the player.
+	 * Removes the entity from the game and spawns the death animation.
+	 */
 	public void die() {
 		this.remove();
 		game.particles.add(new DeathParticle(this));
 	}
+	/**
+	 * Return whether this entity is alive.
+	 */
 	public boolean alive() {
 		return game.level.entities.contains(this);
 	}
+	/**
+	 * Removes the entity from the game.
+	 */
 	public void remove() {
 		game.level.entities.remove(this);
 	}
+	/**
+	 * Draw this entity to the screen.
+	 * @param s The surface to draw on.
+	 */
 	public void draw(Surface s) {
 		// Draw actor
 		this.actor.draw(s);
