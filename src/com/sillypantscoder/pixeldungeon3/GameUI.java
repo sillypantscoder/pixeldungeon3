@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.sillypantscoder.pixeldungeon3.item.Item;
 import com.sillypantscoder.pixeldungeon3.ui.AbsCombine;
 import com.sillypantscoder.pixeldungeon3.ui.AlignedElement;
+import com.sillypantscoder.pixeldungeon3.ui.ChromeBorder;
 import com.sillypantscoder.pixeldungeon3.ui.DataContainer;
 import com.sillypantscoder.pixeldungeon3.ui.HzCombine;
 import com.sillypantscoder.pixeldungeon3.ui.InventoryItemElement;
@@ -49,9 +50,10 @@ public class GameUI {
 		return new AlignedElement(new ImageDisplay(button_backpack), 1, 1);
 	}
 	public UIElement makeBackpackUI() {
+		UIElement dialog = InventoryItemElement.fromInventory(game.player.inventory);
 		return new AbsCombine(new UIElement[] {
 			makeGameUI(),
-			new AlignedElement(new HzCombine(InventoryItemElement.fromInventory(game.player.inventory), Color.GRAY.darker()), 0, 0)
+			new AlignedElement(new ChromeBorder(0, 0, 7, dialog), 0, 0)
 		}, true);
 	}
 	public UIElement makeBackpackItemUI(Item item) {
@@ -61,7 +63,8 @@ public class GameUI {
 		for (int i = 0; i < btns.length; i++) {
 			final int index = i;
 			TextElement txt = new TextElement(btns[index].getName(), 6, Color.WHITE);
-			buttons[index] = new DataContainer<Runnable>(txt, () -> btns[index].execute(game, game.player, item));
+			DataContainer<Runnable> container = new DataContainer<Runnable>(txt, () -> btns[index].execute(game, game.player, item));
+			buttons[index] = new ChromeBorder(58, 0, 2, container);
 		}
 		// Make dialog element
 		UIElement dialog = new VCombine(new UIElement[] {
@@ -70,14 +73,14 @@ public class GameUI {
 				new ImageDisplay(item.image),
 				new Spacer(5, 1),
 				new TextElement(item.getName(), 8, Color.WHITE)
-			}, Color.GRAY.darker()),
+			}, new Color(0, 0, 0, 0)),
 			// buttons
-			new HzCombine(buttons, Color.GRAY.darker())
-		}, Color.GRAY.darker());
+			new HzCombine(buttons, new Color(0, 0, 0, 0))
+		}, new Color(0, 0, 0, 0));
 		// Combine with previous dialogs
 		return new AbsCombine(new UIElement[] {
 			makeBackpackUI(),
-			new AlignedElement(dialog, 0, 0)
+			new AlignedElement(new ChromeBorder(0, 0, 7, dialog), 0, 0)
 		}, true);
 	}
 	public Surface render(int width, int height) {

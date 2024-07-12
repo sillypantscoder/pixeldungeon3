@@ -27,6 +27,7 @@ import com.sillypantscoder.window.Surface;
  *  - A reference to the UI
  */
 public class Game {
+	public static final boolean DEBUG_MODE = false;
 	public Level level;
 	public ArrayList<Particle> particles;
 	public Player player;
@@ -196,34 +197,36 @@ public class Game {
 		int[] cameraPos = getCameraPos(width, height);
 		s.blit(renderWorld(), -cameraPos[0], -cameraPos[1]);
 		// Draw the debug data
-		int mouseX = (int)((double)(mousePos[0] + cameraPos[0]) / Tile.TILE_SIZE);
-		int mouseY = (int)((double)(mousePos[1] + cameraPos[1]) / Tile.TILE_SIZE);
-		String text = "X: " + mouseX + " Y: " + mouseY;
-		if (! level.outOfBounds(mouseX, mouseY)) {
-			Tile t = level.get_at(mouseX, mouseY);
-			s.drawRect(Color.RED, (mouseX * Tile.TILE_SIZE) - cameraPos[0], (mouseY * Tile.TILE_SIZE) - cameraPos[1], Tile.TILE_SIZE, Tile.TILE_SIZE, 1);
-			text += "\n\nTile\nType: " + t.type.name() +
-				"\nLight: " + t.lightStatus.name();
-		}
-		Entity e = level.getEntity(mouseX, mouseY);
-		if (e != null) {
-			text += "\n\nEntity\nHealth: " + e.health + "/" + e.maxHealth;
-			if (e instanceof Rat rat) {
-				text += "\nStatus: " + rat.state.name();
+		if (DEBUG_MODE) {
+			int mouseX = (int)((double)(mousePos[0] + cameraPos[0]) / Tile.TILE_SIZE);
+			int mouseY = (int)((double)(mousePos[1] + cameraPos[1]) / Tile.TILE_SIZE);
+			String text = "X: " + mouseX + " Y: " + mouseY;
+			if (! level.outOfBounds(mouseX, mouseY)) {
+				Tile t = level.get_at(mouseX, mouseY);
+				s.drawRect(Color.RED, (mouseX * Tile.TILE_SIZE) - cameraPos[0], (mouseY * Tile.TILE_SIZE) - cameraPos[1], Tile.TILE_SIZE, Tile.TILE_SIZE, 1);
+				text += "\n\nTile\nType: " + t.type.name() +
+					"\nLight: " + t.lightStatus.name();
 			}
-			text += "\nTime: " + e.time;
-			if (e instanceof Player player) {
-				text += "\n\nInventory:";
-				for (Item m : player.inventory) {
-					text += "\n- " + m.getName();
+			Entity e = level.getEntity(mouseX, mouseY);
+			if (e != null) {
+				text += "\n\nEntity\nHealth: " + e.health + "/" + e.maxHealth;
+				if (e instanceof Rat rat) {
+					text += "\nStatus: " + rat.state.name();
+				}
+				text += "\nTime: " + e.time;
+				if (e instanceof Player player) {
+					text += "\n\nInventory:";
+					for (Item m : player.inventory) {
+						text += "\n- " + m.getName();
+					}
 				}
 			}
+			DroppedItem m = level.getItem(mouseX, mouseY);
+			if (m != null) {
+				text += "\n\nItem\nName: " + m.item.getName();
+			}
+			s.blit(Surface.renderMultilineText(15, text, Color.RED), 0, 0);
 		}
-		DroppedItem m = level.getItem(mouseX, mouseY);
-		if (m != null) {
-			text += "\n\nItem\nName: " + m.item.getName();
-		}
-		s.blit(Surface.renderMultilineText(15, text, Color.RED), 0, 0);
 		// Add UI
 		s.blit(ui.render(width, height), 0, 0);
 		// Return

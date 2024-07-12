@@ -114,6 +114,20 @@ public class Surface {
 		g2d.dispose();
 		return new Surface(newImg);
 	}
+	public Surface tile(int tileWidth, int tileHeight) {
+		// if tileWidth or tileHeight are -1, use the dimensions of the original image
+		if (tileWidth == -1) { tileWidth = this.img.getWidth(); }
+		if (tileHeight == -1) { tileHeight = this.img.getHeight(); }
+		BufferedImage newImg = new BufferedImage(tileWidth, tileHeight, BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2d = newImg.createGraphics();
+		for (int x = 0; x < tileWidth; x += this.img.getWidth()) {
+			for (int y = 0; y < tileHeight; y += this.img.getHeight()) {
+				g2d.drawImage(this.img, x, y, null);
+			}
+		}
+		g2d.dispose();
+		return new Surface(newImg);
+	}
 	public Surface flipHorizontally() {
 		BufferedImage newImg = new BufferedImage(this.img.getWidth(), this.img.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2d = newImg.createGraphics();
