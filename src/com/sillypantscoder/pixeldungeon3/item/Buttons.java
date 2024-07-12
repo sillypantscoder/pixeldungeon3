@@ -49,10 +49,12 @@ public class Buttons {
 				this.item = item;
 			}
 			public void initiate() {
-				targetPlayer.time += 5;
-				targetPlayer.inventory.remove(item);
-				targetPlayer.weaponSlot = item;
-				targetPlayer.game.canContinue = true;
+				if (targetPlayer.weaponSlot == null) {
+					targetPlayer.time += 5;
+					targetPlayer.inventory.remove(item);
+					targetPlayer.weaponSlot = item;
+					targetPlayer.game.canContinue = true;
+				}
 			}
 			public void onTick() {
 			}

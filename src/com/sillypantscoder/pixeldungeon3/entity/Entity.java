@@ -56,6 +56,11 @@ public abstract class Entity implements PathfindTarget {
 	public Tile getTile() {
 		return game.level.get_at(this.x, this.y);
 	}
+	public void damage(int amount) {
+		this.health -= amount;
+		this.actor.damage("" + amount);
+		if (this.health <= 0) this.die();
+	}
 	/**
 	 * Kill the player.
 	 * Removes the entity from the game and spawns the death animation.
@@ -85,7 +90,6 @@ public abstract class Entity implements PathfindTarget {
 		this.actor.draw(s);
 		// Draw health bar
 		drawHealthBar(s);
-		// TODO: Damage text thingys
 	}
 	public void drawHealthBar(Surface s) {
 		if (this.health >= this.maxHealth) return;

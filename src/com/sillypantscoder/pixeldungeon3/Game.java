@@ -51,7 +51,7 @@ public class Game {
 		player = spawn(Player::new);
 		turn = player;
 		// Spawn some rats
-		for (int i = 0; i < 50; i++) spawn(Rat::new);
+		for (int i = 0; i < 30; i++) spawn(Rat::new);
 		// Drop a sword somewhere!
 		drop(new Sword());
 	}

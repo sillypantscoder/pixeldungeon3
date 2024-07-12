@@ -22,7 +22,7 @@ public class SubdivisionLevelGeneration {
 	}
 	public static TileType[][] generateLevel() {
 		// TODO: refactor this monstrosity
-		int worldSize = 40;
+		int worldSize = 60;
 		worldSize /= 2;
 		ArrayList<Rect> rectsToDivide = new ArrayList<Rect>();
 		ArrayList<Rect> resultRects = new ArrayList<Rect>();

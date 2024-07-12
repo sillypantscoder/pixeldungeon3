@@ -1,5 +1,8 @@
 package com.sillypantscoder.pixeldungeon3.entity;
 
+import java.awt.Color;
+import java.util.ArrayList;
+
 import com.sillypantscoder.pixeldungeon3.level.Tile;
 import com.sillypantscoder.window.Surface;
 
@@ -18,6 +21,8 @@ public class Actor {
 	 * False = left; True = right
 	 */
 	public boolean direction;
+	public ArrayList<String> damages;
+	public ArrayList<Integer> damageTimes;
 	public Actor(double x, double y, Spritesheet sheet) {
 		this.x = x;
 		this.y = y;
@@ -25,6 +30,8 @@ public class Actor {
 		this.animationPos = 0;
 		this.sheet = sheet;
 		this.direction = true;
+		this.damages = new ArrayList<String>();
+		this.damageTimes = new ArrayList<Integer>();
 	}
 	public void tick() {
 		animationPos += 1;
@@ -32,6 +39,15 @@ public class Actor {
 		if (realAnimationPos >= sheet.entries.get(animationName).surfaces.length) {
 			animationPos = 0;
 			animationName = sheet.entries.get(animationName).next;
+		}
+		// Damage text thingys:
+		for (int i = 0; i < damages.size(); i++) {
+			damageTimes.set(i, damageTimes.get(i) + 1);
+			if (damageTimes.get(i) > 60) {
+				damages.remove(i);
+				damageTimes.remove(i);
+				i -= 1;
+			}
 		}
 	}
 	/**
@@ -45,6 +61,22 @@ public class Actor {
 	}
 	public void draw(Surface s) {
 		s.blit(getImage(), (int)(this.x * Tile.TILE_SIZE), (int)(this.y * Tile.TILE_SIZE));
+		// Damage text thingys:
+		for (int i = 0; i < damages.size(); i++) {
+			Surface data = Surface.renderText(11, damages.get(i), Color.RED);
+			data.scaleValues(damageTimes.get(i) / 60f);
+			int offset = (int)((damageTimes.get(i) / 60f) * Tile.TILE_SIZE);
+			// Draw
+			int drawX = (int)((this.x + 0.5) * Tile.TILE_SIZE);
+			drawX -= data.get_width() / 2;
+			int drawY = (int)((this.y - 1) * Tile.TILE_SIZE);
+			drawY -= offset;
+			s.blit(data, drawX, drawY);
+		}
+	}
+	public void damage(String data) {
+		damages.add(data);
+		damageTimes.add(0);
 	}
 	public void draw(Surface s, float opacity) {
 		Surface thisImage = getImage();

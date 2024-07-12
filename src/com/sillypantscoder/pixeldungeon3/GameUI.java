@@ -106,6 +106,7 @@ public class GameUI {
 			if (clicked == null) return false;
 			this.state = UIState.BACKPACK;
 			this.currentUI = makeBackpackUI();
+			return true;
 		} else if (this.state == UIState.BACKPACK) {
 			// Was an item clicked?
 			if (clicked == null) {
@@ -128,6 +129,7 @@ public class GameUI {
 				this.state = UIState.GAME;
 				this.currentUI = makeGameUI();
 			}
+			return true;
 		}
 		return false;
 	}

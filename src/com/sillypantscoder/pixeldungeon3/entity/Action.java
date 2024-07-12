@@ -129,8 +129,7 @@ public abstract class Action {
 		}
 		public void initiate() {
 			target.time += 5;
-			attackTarget.health -= this.target.getDamage();
-			if (attackTarget.health <= 0) attackTarget.die();
+			attackTarget.damage(this.target.getDamage());
 			// Animation:
 			target.actor.animate("action");
 			maxTime = 10;
