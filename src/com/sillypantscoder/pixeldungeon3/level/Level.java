@@ -34,11 +34,11 @@ public class Level {
 	/**
 	 * Generate a blank board of the specified size.
 	 */
-	public static TileType[][] generateBoard(int width, int height) {
+	public static TileType[][] generateBoard(int width, int height, TileType type) {
 		TileType[][] layout = new TileType[width][height];
 		for (int x = 0; x < layout.length; x++) {
 			for (int y = 0; y < layout[x].length; y++) {
-				layout[x][y] = TileType.Ground;
+				layout[x][y] = type;
 			}
 		}
 		return layout;
@@ -83,7 +83,7 @@ public class Level {
 				nboard[x][y] = weight;
 			}
 		}
-		return Pathfinding.findPath(nboard, new int[] { startX, startY }, new int[] { endX, endY });
+		return Pathfinding.findPath(nboard, new int[] { startX, startY }, new int[] { endX, endY }, true);
 	}
 	public ArrayList<Player> getPlayers() {
 		ArrayList<Player> players = new ArrayList<Player>();

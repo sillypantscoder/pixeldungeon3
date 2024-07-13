@@ -38,6 +38,10 @@ public class Rect {
 	protected boolean intervalContains(int start, int end, int point) {
 		return start <= point && point <= end;
 	}
+	public boolean containsRect(Rect other) {
+		return this.left() < other.left() && other.right() < this.right() &&
+				this.top() < other.top() && other.bottom() < this.bottom();
+	}
 	public Rect square() {
 		// Center a square inside of this rect
 		int size = Math.min(this.w, this.h);

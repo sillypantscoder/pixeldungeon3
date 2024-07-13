@@ -19,7 +19,7 @@ public class EnemySpawner extends Entity {
 				// Spawn
 				target.spawnEntity();
 				// Continue
-				target.time += 1;
+				target.time += 100;
 				game.canContinue = true;
 			}
 			public void onTick() {}

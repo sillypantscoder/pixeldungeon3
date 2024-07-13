@@ -20,10 +20,7 @@ public class SubdivisionLevelGeneration {
 			System.out.println();
 		}
 	}
-	public static TileType[][] generateLevel() {
-		// TODO: refactor this monstrosity
-		int worldSize = 60;
-		worldSize /= 2;
+	public static ArrayList<Rect> getDividedRects(int worldSize, int minRoomSize, int maxRoomSize) {
 		ArrayList<Rect> rectsToDivide = new ArrayList<Rect>();
 		ArrayList<Rect> resultRects = new ArrayList<Rect>();
 		rectsToDivide.add(new Rect(0, 0, worldSize, worldSize));
@@ -34,7 +31,7 @@ public class SubdivisionLevelGeneration {
 			rectsToDivide = new ArrayList<Rect>();
 			for (int i = 0; i < loopRects.size(); i++) {
 				Rect r = loopRects.get(i);
-				boolean discardRect = false;
+				boolean finishRect = false;
 				// If the rect has no area, remove it
 				if (r.w == 0 || r.h == 0) {
 					// Aaaaaa!
@@ -42,11 +39,11 @@ public class SubdivisionLevelGeneration {
 					continue;
 				}
 				// If the rect is too small to be divided further, finish it
-				if (r.w < 3 || r.h < 3) discardRect = true;
+				if (r.w < minRoomSize || r.h < minRoomSize) finishRect = true;
 				// If the rect is generally small enough, finish it
-				if (r.w < 7 && r.h < 7) discardRect = true;
+				if (r.w < maxRoomSize && r.h < maxRoomSize) finishRect = true;
 				// Handle the rect
-				if (discardRect) {
+				if (finishRect) {
 					rectsToDivide.remove(r);
 					resultRects.add(r);
 				} else {
@@ -58,8 +55,48 @@ public class SubdivisionLevelGeneration {
 				}
 			}
 		}
-		// Create the board
-		TileType[][] board = Level.generateBoard((worldSize * 2) + 1, (worldSize * 2) + 1);
+		return resultRects;
+	}
+	public static void addDoor(TileType[][] board, Rect rect) {
+		int nDoors = 1 + (int)(Math.round(Math.random() * 2));
+		for (int d = 0; d < nDoors; d++) {
+			int doorSide = (int)(Math.round(Math.random() * 3));
+			int doorX = 0;
+			int doorY = 0;
+			switch (doorSide) {
+				case 0:
+					// Top
+					doorX = Random.randint((rect.left() * 2) + 1, (rect.right() * 2) - 1);
+					doorY = rect.top() * 2;
+					board[doorX][doorY] = TileType.Door;
+					break;
+				case 1:
+					// Bottom
+					doorX = Random.randint((rect.left() * 2) + 1, (rect.right() * 2) - 1);
+					doorY = rect.bottom() * 2;
+					board[doorX][doorY] = TileType.Door;
+					break;
+				case 2:
+					// Left
+					doorX = rect.left() * 2;
+					doorY = Random.randint((rect.top() * 2) + 1, (rect.bottom() * 2) - 1);
+					board[doorX][doorY] = TileType.Door;
+					break;
+				case 3:
+					// Right
+					doorX = rect.right() * 2;
+					doorY = Random.randint((rect.top() * 2) + 1, (rect.bottom() * 2) - 1);
+					board[doorX][doorY] = TileType.Door;
+					break;
+			}
+		}
+	}
+	public static TileType[][] generateLevel() {
+		int worldSize = 60;
+		worldSize /= 2;
+		ArrayList<Rect> resultRects = getDividedRects(worldSize, 3, 7);
+		// Draw the rooms
+		TileType[][] board = Level.generateBoard((worldSize * 2) + 1, (worldSize * 2) + 1, TileType.Ground);
 		for (int i = 0; i < resultRects.size(); i++) {
 			// Top
 			for (int x = resultRects.get(i).left() * 2; x < resultRects.get(i).right() * 2; x++) board[x][resultRects.get(i).top() * 2] = TileType.Wall;
@@ -70,39 +107,16 @@ public class SubdivisionLevelGeneration {
 			// Right
 			for (int y = resultRects.get(i).top() * 2; y < resultRects.get(i).bottom() * 2; y++) board[resultRects.get(i).right() * 2][y] = TileType.Wall;
 			// Add doors
-			int nDoors = 1 + (int)(Math.round(Math.random() * 2));
-			for (int d = 0; d < nDoors; d++) {
-				int doorSide = (int)(Math.round(Math.random() * 3));
-				int doorX = 0;
-				int doorY = 0;
-				switch (doorSide) {
-					case 0:
-						// Top
-						doorX = Random.randint((resultRects.get(i).left() * 2) + 1, (resultRects.get(i).right() * 2) - 1);
-						doorY = resultRects.get(i).top() * 2;
-						board[doorX][doorY] = TileType.Door;
-						break;
-					case 1:
-						// Bottom
-						doorX = Random.randint((resultRects.get(i).left() * 2) + 1, (resultRects.get(i).right() * 2) - 1);
-						doorY = resultRects.get(i).bottom() * 2;
-						board[doorX][doorY] = TileType.Door;
-						break;
-					case 2:
-						// Left
-						doorX = resultRects.get(i).left() * 2;
-						doorY = Random.randint((resultRects.get(i).top() * 2) + 1, (resultRects.get(i).bottom() * 2) - 1);
-						board[doorX][doorY] = TileType.Door;
-						break;
-					case 3:
-						// Right
-						doorX = resultRects.get(i).right() * 2;
-						doorY = Random.randint((resultRects.get(i).top() * 2) + 1, (resultRects.get(i).bottom() * 2) - 1);
-						board[doorX][doorY] = TileType.Door;
-						break;
-				}
-			}
+			addDoor(board, resultRects.get(i));
 		}
+		// Draw the border
+		for (int i = 0; i < board.length; i++) {
+			board[i][0] = TileType.Wall;
+			board[i][board[i].length - 1] = TileType.Wall;
+			board[0][i] = TileType.Wall;
+			board[board.length - 1][i] = TileType.Wall;
+		}
+		// Finish
 		return board;
 	}
 }

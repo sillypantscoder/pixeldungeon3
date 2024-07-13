@@ -26,12 +26,15 @@ public class Player extends LivingEntity {
 	public PathfindTarget target;
 	public ArrayList<Item> inventory;
 	public Weapon weaponSlot;
+	public PlayerHealTimer healTimer;
 	public Player(Game game, int x, int y) {
 		super(game, x, y);
 		target = null;
 		inventory = new ArrayList<Item>();
 		inventory.add(new FoodRation());
 		this.weaponSlot = new Knuckleduster();
+		this.healTimer = new PlayerHealTimer(this);
+		game.level.entities.add(this.healTimer);
 	}
 	public void requestAction() {
 		this.actor.animate("idle");
@@ -119,6 +122,10 @@ public class Player extends LivingEntity {
 			public int getY() { return worldY; }
 		};
 	}
+	public void remove() {
+		super.remove();
+		this.healTimer.remove();
+	}
 	// Lighting
 	public int getViewDistance() {
 		return 7;
@@ -160,5 +167,27 @@ public class Player extends LivingEntity {
 			}
 		}
 		return false;
+	}
+	public class PlayerHealTimer extends Entity {
+		public Player player;
+		public PlayerHealTimer(Player player) {
+			super(player.game);
+			this.player = player;
+		}
+		public void requestAction() {
+			this.setAction(new Action<PlayerHealTimer>(this) {
+				public void initiate() {
+					// Spawn
+					if (target.player.health < target.player.maxHealth) {
+						target.player.health += 1;
+					}
+					// Continue
+					target.time += 100;
+					game.canContinue = true;
+				}
+				public void onTick() {}
+				public boolean canBeRemoved() { return true; }
+			});
+		}
 	}
 }

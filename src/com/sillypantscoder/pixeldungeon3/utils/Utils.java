@@ -11,6 +11,46 @@ import java.util.Scanner;
  * This class contains various random utilities used by the rest of the code.
  */
 public class Utils {
+	public static<T> void log(T item) {
+		System.out.println(getLog(item));
+	}
+	public static<T> String getLog(T item) {
+		if (item instanceof String) return "\"" + item + "\"";
+		else if (item instanceof Number) return item.toString();
+		else if (item instanceof Object[] itemList) return logArray(itemList);
+		else if (item instanceof int[] itemList) return logArray(itemList);
+		else if (item == null) return "null";
+		else {
+			String s = item.toString();
+			return s;
+		}
+	}
+	public static<T> String logArray(T[] items) {
+		String result = "Object[" + items.length + "] {";
+		String[] strItems = new String[items.length];
+		for (var i = 0; i < items.length; i++) strItems[i] = getLog(items[i]);
+		for (var i = 0; i < strItems.length; i++) {
+			if (i != 0) {
+				result += ", ";
+			} else result += " ";
+			result += strItems[i];
+		}
+		result += " }";
+		return result;
+	}
+	public static String logArray(int[] items) {
+		String result = "int[" + items.length + "] {";
+		String[] strItems = new String[items.length];
+		for (var i = 0; i < items.length; i++) strItems[i] = items[i] + "";
+		for (var i = 0; i < strItems.length; i++) {
+			if (i != 0) {
+				result += ", ";
+			} else result += " ";
+			result += getLog(strItems[i]);
+		}
+		result += " }";
+		return result;
+	}
 	public static String readFile(File file) {
 		try {
 			Scanner fileReader = new Scanner(file);
